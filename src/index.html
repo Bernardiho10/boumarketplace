@@ -1,0 +1,47 @@
+<div class="page" data-ham-page-config='{
+      "layout": "default.lhtml"
+     }'>
+  <div class="hero-portal">
+    <!-- Top Result Layer (Assistant Mode) -->
+    <div id="search-results-dropdown" class="d-none animate-reveal">
+      <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-5 border-bottom border-glass pb-4">
+          <h2 class="text-accent underline-label mb-0">Marketplace Feed</h2>
+          <div class="text-label">Verified Market Feed From Trusted providers</div>
+        </div>
+
+        <div id="results-list" class="bento-grid">
+          <!-- Neural results populate here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Stage (Meta Indicators) -->
+    <!-- <div class="position-absolute top-0 start-0 w-100 p-5 d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-label" id="intel-node">NODE: LAGOS_CENTRAL_01</span>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <span class="text-label" id="station-id">STATION: COMMAND</span>
+      </div>
+    </div> -->
+
+    <!-- Bottom Assistant Console -->
+    <div class="search-terminal animate-reveal">
+      <div class="d-flex align-items-center flex-row gap-3 mb-2">
+        <i class="fas fa-brain text-accent small"></i>
+        <p class="text-label mb-0">Conversational Search Engine</p>
+      </div>
+
+      <input type="text" id="search-input" placeholder="Ask about any property... (e.g. 3 bedroom in Lekki)"
+        spellcheck="false" autocomplete="off">
+
+      <div id="search-intent-badges" class="d-flex gap-2 mt-3">
+        <span class="intent-badge" id="badge-location">Location</span>
+        <span class="intent-badge" id="badge-price">Budget</span>
+        <span class="intent-badge" id="badge-type">Type</span>
+        <span class="intent-badge" id="badge-bed">Bedrooms</span>
+      </div>
+    </div>
+  </div>
+</div>
