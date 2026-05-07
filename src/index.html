@@ -38,6 +38,86 @@
                 <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria's Most Exclusive Real Estate Intelligence</p>
             </div>
 
+            <!-- Traditional Filters (Styled as Pills) -->
+            <div class="filters-pills-row">
+                <div class="filter-pill">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <select id="filter-location">
+                        <option value="nigeria">All Nigeria</option>
+                        <option value="lagos">Lagos</option>
+                        <option value="lekki">Lekki</option>
+                        <option value="ikoyi">Ikoyi</option>
+                        <option value="ikeja">Ikeja</option>
+                        <option value="abuja">Abuja</option>
+                        <option value="port harcourt">Port Harcourt</option>
+                        <option value="ibadan">Ibadan</option>
+                        <option value="enugu">Enugu</option>
+                    </select>
+                </div>
+                <div class="filter-pill">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <select id="filter-min-price">
+                        <option value="">Min Price</option>
+                        <option value="10000000">₦10M</option>
+                        <option value="50000000">₦50M</option>
+                        <option value="100000000">₦100M</option>
+                        <option value="250000000">₦250M</option>
+                        <option value="500000000">₦500M</option>
+                    </select>
+                </div>
+                <div class="filter-pill">
+                    <i class="fas fa-chart-line"></i>
+                    <select id="filter-max-price">
+                        <option value="">Max Price</option>
+                        <option value="50000000">₦50M</option>
+                        <option value="100000000">₦100M</option>
+                        <option value="250000000">₦250M</option>
+                        <option value="500000000">₦500M</option>
+                        <option value="1000000000">₦1B+</option>
+                    </select>
+                </div>
+                <div class="filter-pill">
+                    <i class="fas fa-calendar-alt"></i>
+                    <select id="filter-date">
+                        <option value="">Any Date</option>
+                        <option value="24h">Last 24h</option>
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Property Type Filter Pills -->
+            <div class="type-pills-container">
+                <h2 class="visually-hidden">Filter by Property Type</h2>
+                <div class="type-pills-row" id="property-type-pills">
+                    <button class="type-pill active" data-type="" aria-label="All Properties">
+                        <i class="fas fa-th-large"></i> All
+                    </button>
+                    <button class="type-pill" data-type="duplex" aria-label="Duplexes">
+                        <i class="fas fa-home"></i> Duplex
+                    </button>
+                    <button class="type-pill" data-type="apartment" aria-label="Apartments">
+                        <i class="fas fa-building"></i> Apartment
+                    </button>
+                    <button class="type-pill" data-type="terrace" aria-label="Terraces">
+                        <i class="fas fa-layer-group"></i> Terrace
+                    </button>
+                    <button class="type-pill" data-type="land" aria-label="Land">
+                        <i class="fas fa-mountain"></i> Land
+                    </button>
+                    <button class="type-pill" data-type="commercial" aria-label="Commercial Properties">
+                        <i class="fas fa-store"></i> Commercial
+                    </button>
+                    <button class="type-pill" data-type="mansion" aria-label="Mansions">
+                        <i class="fas fa-crown"></i> Mansion
+                    </button>
+                    <button class="type-pill" data-type="penthouse" aria-label="Penthouses">
+                        <i class="fas fa-skyline"></i> Penthouse
+                    </button>
+                </div>
+            </div>
+
             <!-- Inline Search Results (appears above terminal) -->
             <div id="inline-results" class="inline-results-strip" style="display:none;">
                 <div class="inline-results-header">
@@ -78,86 +158,6 @@
                         <i class="fas fa-layer-group"></i>
                         Browse all premium listings
                     </a>
-                </div>
-
-                <!-- Traditional Filters (Styled as Pills) -->
-                <div class="filters-pills-row">
-                    <div class="filter-pill">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <select id="filter-location">
-                            <option value="nigeria">All Nigeria</option>
-                            <option value="lagos">Lagos</option>
-                            <option value="lekki">Lekki</option>
-                            <option value="ikoyi">Ikoyi</option>
-                            <option value="ikeja">Ikeja</option>
-                            <option value="abuja">Abuja</option>
-                            <option value="port harcourt">Port Harcourt</option>
-                            <option value="ibadan">Ibadan</option>
-                            <option value="enugu">Enugu</option>
-                        </select>
-                    </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-money-bill-wave"></i>
-                        <select id="filter-min-price">
-                            <option value="">Min Price</option>
-                            <option value="10000000">₦10M</option>
-                            <option value="50000000">₦50M</option>
-                            <option value="100000000">₦100M</option>
-                            <option value="250000000">₦250M</option>
-                            <option value="500000000">₦500M</option>
-                        </select>
-                    </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-chart-line"></i>
-                        <select id="filter-max-price">
-                            <option value="">Max Price</option>
-                            <option value="50000000">₦50M</option>
-                            <option value="100000000">₦100M</option>
-                            <option value="250000000">₦250M</option>
-                            <option value="500000000">₦500M</option>
-                            <option value="1000000000">₦1B+</option>
-                        </select>
-                    </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-calendar-alt"></i>
-                        <select id="filter-date">
-                            <option value="">Any Date</option>
-                            <option value="24h">Last 24h</option>
-                            <option value="7d">Last 7 days</option>
-                            <option value="30d">Last 30 days</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Property Type Filter Pills -->
-                <div class="type-pills-container">
-                    <h2 class="visually-hidden">Filter by Property Type</h2>
-                    <div class="type-pills-row" id="property-type-pills">
-                        <button class="type-pill active" data-type="" aria-label="All Properties">
-                            <i class="fas fa-th-large"></i> All
-                        </button>
-                        <button class="type-pill" data-type="duplex" aria-label="Duplexes">
-                            <i class="fas fa-home"></i> Duplex
-                        </button>
-                        <button class="type-pill" data-type="apartment" aria-label="Apartments">
-                            <i class="fas fa-building"></i> Apartment
-                        </button>
-                        <button class="type-pill" data-type="terrace" aria-label="Terraces">
-                            <i class="fas fa-layer-group"></i> Terrace
-                        </button>
-                        <button class="type-pill" data-type="land" aria-label="Land">
-                            <i class="fas fa-mountain"></i> Land
-                        </button>
-                        <button class="type-pill" data-type="commercial" aria-label="Commercial Properties">
-                            <i class="fas fa-store"></i> Commercial
-                        </button>
-                        <button class="type-pill" data-type="mansion" aria-label="Mansions">
-                            <i class="fas fa-crown"></i> Mansion
-                        </button>
-                        <button class="type-pill" data-type="penthouse" aria-label="Penthouses">
-                            <i class="fas fa-skyline"></i> Penthouse
-                        </button>
-                    </div>
                 </div>
 
                 <!-- MagicUI Marquee (Sample Searches) -->
