@@ -15,17 +15,16 @@
   
   <!-- Site Metadata -->
   <meta name="description" content="A futuristic, AI-driven property marketplace for Nigeria. Search with voice or text.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23050804'/%3E%3Cpath d='M14 37 32 17l18 20v13H38V36H26v14H14V37Z' fill='%2300ff88'/%3E%3C/svg%3E">
   
-  {ham:css}
+  <link rel="stylesheet" href="index.css">
+  <!-- Page specific styles will be injected here if needed, but index.css covers core -->
 </head>
-<body class="bg-dark text-light overflow-x-hidden">
-
-  <!-- Application Info Layer -->
-  <div id="app-info" class="fixed-top" style="z-index: 1000;"></div>
-<body class="neural-theme">
+<body class="neural-theme bg-dark text-light overflow-x-hidden">
     <div class="canvas"></div>
-    <div class="noise"></div>
-    <div class="light-leak"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <!-- Clean Background -->
     
     <!-- Application Info Layer -->
     <div id="app-info" class="fixed-top" style="z-index: 1000;"></div>
@@ -35,6 +34,16 @@
         <embed type="ham/page"/>
     </main>
 
-    {ham:js}
+    <script type="module">
+        const page = document.querySelector('.page');
+        const scriptId = page ? page.id : 'marketplace-search-view';
+        if (scriptId === 'marketplace-property-view') {
+            import('./property.js');
+        } else if (scriptId === 'marketplace-listing-view') {
+            import('./listing.js');
+        } else {
+            import('./index.js');
+        }
+    </script>
 </body>
 </html>

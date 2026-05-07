@@ -8,20 +8,20 @@ const inputFiles = glob.sync('./src/*.ts'); // Adjust the pattern as needed
 export default {
     input: inputFiles,
     output: {
-        dir: 'public/assets/js',
+        dir: 'public',
         format: 'esm',
         sourcemap: false,
-        preserveModules: true,  // Preserve module structure
-        preserveModulesRoot: 'src',  // Keep module structure relative to 'src'
     },
     plugins: [
         copy({
             targets: [
-                {src: 'src/**/*.css', dest: 'public/assets/css'},
-                {src: 'src/**/*.js', dest: 'public/assets/js'},
+                {src: 'src/index.css', dest: 'public'},
+                {src: 'src/property.css', dest: 'public'},
+                {src: 'src/listing.css', dest: 'public'},
+                {src: 'src/data.json', dest: 'public'}
             ],
-            flatten: false,
-            copyOnce: false // Ensure it re-copies on watch
+            flatten: true,
+            copyOnce: false 
         }),
         typescript({
             tsconfig: './tsconfig.json'

@@ -1,23 +1,4 @@
-export interface Property {
-    id: number;
-    slug: string;
-    title: string;
-    price: string;
-    location: string;
-    description: string;
-    image: string;
-    original_url: string;
-    category: string;
-    status: string;
-    bedrooms: number;
-    bathrooms: number;
-    sqft: number;
-    amenities: string[];
-    gallery: string[];
-    datePosted: string; // ISO date string e.g. "2026-04-28"
-}
-
-export const MOCK_PROPERTIES: Property[] = [
+const MOCK_PROPERTIES = [
     {
         id: 1,
         slug: "the-glass-house-terrace",
@@ -333,3 +314,42 @@ export const MOCK_PROPERTIES: Property[] = [
         datePosted: "2026-03-01"
     }
 ];
+
+class DataProvider {
+    constructor() {
+        this.properties = [];
+        this.initialized = false;
+    }
+    static getInstance() {
+        if (!DataProvider.instance) {
+            DataProvider.instance = new DataProvider();
+        }
+        return DataProvider.instance;
+    }
+    async init() {
+        if (this.initialized)
+            return;
+        this.properties = [...MOCK_PROPERTIES];
+        try {
+            const response = await fetch('./data.json');
+            if (response.ok) {
+                const scrapedData = await response.json();
+                if (Array.isArray(scrapedData) && scrapedData.length > 0) {
+                    this.properties = [...scrapedData, ...this.properties];
+                }
+            }
+        }
+        catch {
+            this.properties = [...MOCK_PROPERTIES];
+        }
+        this.initialized = true;
+    }
+    getAllProperties() {
+        return this.properties;
+    }
+    getPropertyById(id) {
+        return this.properties.find(p => p.id === id);
+    }
+}
+
+export { DataProvider as D, MOCK_PROPERTIES as M };

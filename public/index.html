@@ -1,12 +1,35 @@
-<div class="page" id="marketplace-search-view" data-ham-page-config='{
-    "layout": "default.lhtml",
-    "css": [
-        "index.css"
-    ],
-    "js": [
-        "index.ts"
-    ]
-}'>
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BOU Marketplace | Futuristic Real Estate</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  
+  <!-- Site Metadata -->
+  <meta name="description" content="A futuristic, AI-driven property marketplace for Nigeria. Search with voice or text."/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 64 64&#39;%3E%3Crect width=&#39;64&#39; height=&#39;64&#39; rx=&#39;14&#39; fill=&#39;%23050804&#39;/%3E%3Cpath d=&#39;M14 37 32 17l18 20v13H38V36H26v14H14V37Z&#39; fill=&#39;%2300ff88&#39;/%3E%3C/svg%3E"/>
+  
+  <link rel="stylesheet" href="index.css"/>
+  <!-- Page specific styles will be injected here if needed, but index.css covers core -->
+</head>
+<body class="neural-theme bg-dark text-light overflow-x-hidden">
+    <div class="canvas"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <!-- Clean Background -->
+    
+    <!-- Application Info Layer -->
+    <div id="app-info" class="fixed-top" style="z-index: 1000;"></div>
+
+    <!-- Main Content Wrapper -->
+    <main id="main-content" class="min-vh-100 d-flex flex-column">
+        <div class="page" id="marketplace-search-view">
 
     <!-- ════════════════════════════════════════
          VOICE SEARCH OVERLAY (shown while recording)
@@ -35,7 +58,7 @@
             <!-- Minimalist Headline -->
             <div class="hero-text-block mb-5">
                 <h1 class="text-title main-headline" style="text-align: center;"><span class="text-accent">BOU</span> Marketplace</h1>
-                <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria's Most Exclusive Real Estate Intelligence</p>
+                <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria&#39;s Most Exclusive Real Estate Intelligence</p>
             </div>
 
             <!-- Inline Search Results (appears above terminal) -->
@@ -54,10 +77,7 @@
                 <div class="search-terminal-glass" id="main-terminal">
                     <div class="search-input-row">
                         <div id="search-ghost" class="ghost-layer"></div>
-                        <input type="text" id="search-input"
-                            placeholder="e.g. Find a 4-bedroom duplex in Lekki under 150M"
-                            spellcheck="false"
-                            autocomplete="off">
+                        <input type="text" id="search-input" placeholder="e.g. Find a 4-bedroom duplex in Lekki under 150M" spellcheck="false" autocomplete="off"/>
                         <button id="voice-search-btn" class="voice-btn" title="Voice Search">
                             <i class="fas fa-microphone"></i>
                         </button>
@@ -69,7 +89,7 @@
 
                 <div class="terminal-footer-hint mt-2">
                     <span class="text-label" style="font-size: 0.6rem; opacity: 0.3;">
-                        <i class="fas fa-bolt me-1"></i> PRESS ENTER TO SEARCH &nbsp;·&nbsp; <i class="fas fa-microphone me-1"></i> CLICK MIC FOR VOICE
+                        <i class="fas fa-bolt me-1"></i> PRESS ENTER TO SEARCH  ·  <i class="fas fa-microphone me-1"></i> CLICK MIC FOR VOICE
                     </span>
                 </div>
 
@@ -163,17 +183,17 @@
                 <!-- MagicUI Marquee (Sample Searches) -->
                 <div class="marquee-wrapper mt-5">
                     <div class="marquee-content">
-                        <span class="suggestion-chip">"Show me luxury penthouses in Victoria Island"</span>
-                        <span class="suggestion-chip">"Any 5-bed detached houses in Maitama?"</span>
-                        <span class="suggestion-chip">"Commercial plots in Eko Atlantic under 500M"</span>
-                        <span class="suggestion-chip">"3 bedroom flat for rent in Ikoyi"</span>
-                        <span class="suggestion-chip">"Duplex for sale in Lekki under 200M"</span>
+                        <span class="suggestion-chip">&#34;Show me luxury penthouses in Victoria Island&#34;</span>
+                        <span class="suggestion-chip">&#34;Any 5-bed detached houses in Maitama?&#34;</span>
+                        <span class="suggestion-chip">&#34;Commercial plots in Eko Atlantic under 500M&#34;</span>
+                        <span class="suggestion-chip">&#34;3 bedroom flat for rent in Ikoyi&#34;</span>
+                        <span class="suggestion-chip">&#34;Duplex for sale in Lekki under 200M&#34;</span>
                         <!-- Duplicate for seamless loop -->
-                        <span class="suggestion-chip">"Show me luxury penthouses in Victoria Island"</span>
-                        <span class="suggestion-chip">"Any 5-bed detached houses in Maitama?"</span>
-                        <span class="suggestion-chip">"Commercial plots in Eko Atlantic under 500M"</span>
-                        <span class="suggestion-chip">"3 bedroom flat for rent in Ikoyi"</span>
-                        <span class="suggestion-chip">"Duplex for sale in Lekki under 200M"</span>
+                        <span class="suggestion-chip">&#34;Show me luxury penthouses in Victoria Island&#34;</span>
+                        <span class="suggestion-chip">&#34;Any 5-bed detached houses in Maitama?&#34;</span>
+                        <span class="suggestion-chip">&#34;Commercial plots in Eko Atlantic under 500M&#34;</span>
+                        <span class="suggestion-chip">&#34;3 bedroom flat for rent in Ikoyi&#34;</span>
+                        <span class="suggestion-chip">&#34;Duplex for sale in Lekki under 200M&#34;</span>
                     </div>
                 </div>
             </div>
@@ -234,7 +254,7 @@
             <div class="footer-attribution">
                 <div class="attribution-badge">
                     <i class="fas fa-database"></i>
-                    <span>Market Data aggregated from verified Nigerian Property Exchanges & Jiji.ng</span>
+                    <span>Market Data aggregated from verified Nigerian Property Exchanges &amp; Jiji.ng</span>
                 </div>
                 <div class="attribution-status">
                     <span class="status-dot"></span> NEURAL CACHE: OPTIMIZED
@@ -242,7 +262,7 @@
             </div>
 
             <div class="footer-bottom">
-                <p class="footer-copyright">&copy; 2026 BOU Group. All rights reserved.</p>
+                <p class="footer-copyright">© 2026 BOU Group. All rights reserved.</p>
                 <div class="footer-legal">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Access</a>
@@ -263,7 +283,7 @@
         </button>
         
         <div class="stage-media">
-            <img id="stage-main-img" src="" alt="Property View">
+            <img id="stage-main-img" src="" alt="Property View"/>
             <div class="stage-price-bar">
                 <div class="stage-price-inner">
                     <div class="stage-price-amount">
@@ -325,4 +345,21 @@
         </div>
     </div>
     <script type="module" src="index.js"></script>
-</div>
+
+
+    </main>
+
+    <script type="module">
+        const page = document.querySelector('.page');
+        const scriptId = page ? page.id : 'marketplace-search-view';
+        if (scriptId === 'marketplace-property-view') {
+            import('./property.js');
+        } else if (scriptId === 'marketplace-listing-view') {
+            import('./listing.js');
+        } else {
+            import('./index.js');
+        }
+    </script>
+
+
+</body></html>
