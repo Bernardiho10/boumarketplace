@@ -589,15 +589,16 @@ class NeuralMarketView extends MagicView {
 }
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
-    // Initialize data first
     await DataProvider.getInstance().init();
     const view = new NeuralMarketView("marketplace-search-view");
-    window.marketplaceView = view; // Global access for onclick handlers
+    window.marketplaceView = view;
     await view.viewModel.resolveNode();
     const intelNode = document.getElementById("intel-node");
-    const stationId = document.getElementById("station-id");
-    if (intelNode)
-        intelNode.innerText = `NODE: ${view.viewModel.get("location")}`;
-    if (stationId)
-        stationId.innerText = `STATION: ${view.viewModel.get("device").toUpperCase()}`;
+    intelNode?.classList.remove("animate-pulse");
+    intelNode?.classList.add("animate-fade-in");
+    intelNode.innerText = `NODE: ${(await view.viewModel.get("location"))}`;
+    const deviceNode = document.getElementById("device-node");
+    deviceNode?.classList.remove("animate-pulse");
+    deviceNode?.classList.add("animate-fade-in");
+    deviceNode.innerText = `DEVICE: ${view.viewModel.get("device")}`;
 });
