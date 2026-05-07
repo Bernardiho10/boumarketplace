@@ -676,12 +676,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     await view.viewModel.resolveNode();
 
     const intelNode = document.getElementById("intel-node");
-    intelNode?.classList.remove("animate-pulse");
-    intelNode?.classList.add("animate-fade-in");
-    intelNode.innerText = `NODE: ${(await view.viewModel.get("location"))}`;
+    if (intelNode) {
+        intelNode.classList.remove("animate-pulse");
+        intelNode.classList.add("animate-fade-in");
+        intelNode.innerText = `NODE: ${(await view.viewModel.get("location"))}`;
+    }
 
     const deviceNode = document.getElementById("device-node");
-    deviceNode?.classList.remove("animate-pulse");
-    deviceNode?.classList.add("animate-fade-in");
-    deviceNode.innerText = `DEVICE: ${view.viewModel.get("device")}`;
+    if (deviceNode) {
+        deviceNode.classList.remove("animate-pulse");
+        deviceNode.classList.add("animate-fade-in");
+        deviceNode.innerText = `DEVICE: ${view.viewModel.get("device")}`;
+    }
 });

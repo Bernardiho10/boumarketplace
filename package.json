@@ -4,8 +4,9 @@
 	  "description": "A HAM Application",
 	  "type": "module",
 	  "scripts": {
-	  	  "build": "ham build && rollup -c",
+	  	  "build": "rollup -c",
 	  	  "dev": "concurrently \"rollup -c -w\" \"ham serve\"",
+	  	  "build:ham": "ham build && rollup -c",
 	  	  "test": "echo \"Error: no test specified\" && exit 1",
 	  	  "scrape": "npx tsx scripts/scrape.ts"
 	  },
