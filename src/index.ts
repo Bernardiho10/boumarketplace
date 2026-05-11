@@ -1,5 +1,6 @@
 import { MagicElement, MagicView, MagicViewModel, MagicEvent } from "../../magicui/src/index";
 import { DataProvider } from "./lib/data-provider";
+import { NINJA_CONFIG } from './config';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -422,7 +423,7 @@ class NeuralMarketView extends MagicView {
         const results = allProps.map(p => {
             // Location Filter
             if (locFilter && locFilter !== 'nigeria' && !p.location.toLowerCase().includes(locFilter.toLowerCase())) return { property: p, score: 0 };
-            
+
             // Type Filter
             if (typeFilter && !p.category.toLowerCase().includes(typeFilter.toLowerCase()) && !p.title.toLowerCase().includes(typeFilter.toLowerCase())) return { property: p, score: 0 };
 
@@ -499,7 +500,7 @@ class NeuralMarketView extends MagicView {
             mainImg.src = prop.image || FALLBACK_PROPERTY_IMAGE;
             mainImg.onerror = () => { mainImg.src = FALLBACK_PROPERTY_IMAGE; };
         }
-        
+
         const titleEl = document.getElementById("stage-title");
         if (titleEl) titleEl.innerText = prop.title;
 
@@ -511,7 +512,7 @@ class NeuralMarketView extends MagicView {
 
         const locEl = document.getElementById("stage-location");
         if (locEl) locEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${prop.location}`;
-        
+
         const bedsEl = document.getElementById("stage-beds");
         if (bedsEl) bedsEl.innerText = (prop.bedrooms || 0).toString();
 
@@ -520,7 +521,7 @@ class NeuralMarketView extends MagicView {
 
         const sqftEl = document.getElementById("stage-sqft");
         if (sqftEl) sqftEl.innerText = (prop.sqft || 0).toLocaleString();
-        
+
         const descEl = document.getElementById("stage-desc");
         if (descEl) descEl.innerText = prop.description || "No intelligence brief available for this asset.";
 
@@ -535,7 +536,7 @@ class NeuralMarketView extends MagicView {
         }
 
         // Show Stage
-        stage.style.display = 'flex'; 
+        stage.style.display = 'flex';
         stage.classList.remove("d-none");
         document.body.style.overflow = "hidden";
         this.viewModel.set("is_stage_active", true);
@@ -666,6 +667,53 @@ class NeuralMarketView extends MagicView {
     }
 }
 
+// ─── Ninja Integration ────────────────────────────────────────────────────────
+declare var Ninja: any;
+
+type NinjaWidgetConfig = {
+    apiKey: string;
+    targetElement: string;
+    display: "button";
+    buttonLabel: string;
+    idType: "nin";
+    mode: "lookup";
+    onSuccess: (data: unknown) => void;
+    onFailure: (result: unknown) => void;
+    onError: (error: unknown) => void;
+};
+
+function initNinjaIntegration(retries = 20) {
+    if (typeof Ninja === 'undefined') {
+        if (retries <= 0) {
+            return;
+        }
+        setTimeout(() => initNinjaIntegration(retries - 1), 500);
+        return;
+    }
+
+    const config: NinjaWidgetConfig = {
+        apiKey: NINJA_CONFIG.CLIENT_KEY,
+        targetElement: "#ninja-verify-container",
+        display: "button",
+        buttonLabel: "Verify Identity",
+        idType: "nin",
+        mode: "lookup",
+        onSuccess: () => undefined,
+        onFailure: () => undefined,
+        onError: () => undefined
+    };
+
+    if (typeof Ninja.init === "function") {
+        Ninja.init(config);
+        return;
+    }
+
+    const ninja = new Ninja(config);
+    if (typeof ninja.render === "function") {
+        ninja.render();
+    }
+}
+
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -674,6 +722,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const view = new NeuralMarketView("marketplace-search-view");
     (window as any).marketplaceView = view;
     await view.viewModel.resolveNode();
+
+    // Initialize Ninja
+    initNinjaIntegration();
 
     const intelNode = document.getElementById("intel-node");
     if (intelNode) {

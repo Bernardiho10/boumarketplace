@@ -18,10 +18,14 @@ export default {
                 {src: 'src/index.css', dest: 'public'},
                 {src: 'src/property.css', dest: 'public'},
                 {src: 'src/listing.css', dest: 'public'},
-                {src: 'src/data.json', dest: 'public'}
+                {src: 'src/data.json', dest: 'public'},
+                // Ninja SDK bundle — kept in src/assets/js/ as the canonical
+                // tracked copy and shipped to /ninja.js so default.lhtml's
+                // <script src="/ninja.js"> resolves on every clean build.
+                {src: 'src/assets/js/ninja.js', dest: 'public'}
             ],
             flatten: true,
-            copyOnce: false 
+            copyOnce: false
         }),
         typescript({
             tsconfig: './tsconfig.json'

@@ -59,6 +59,7 @@
             <div class="hero-text-block mb-5">
                 <h1 class="text-title main-headline" style="text-align: center;"><span class="text-accent">BOU</span> Marketplace</h1>
                 <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria&#39;s Most Exclusive Real Estate Properties</p>
+                <div id="ninja-verify-container" class="mt-3"></div>
             </div>
 
             <!-- Traditional Filters (Styled as Pills) -->
@@ -349,6 +350,13 @@
             import('./index.js');
         }
     </script>
+    <!--
+        The Ninja SDK. Defaults to the local copy at /ninja.js (works on dev
+        and any host that ships boumarketplace/public/ninja.js). When the
+        CDN goes live, switch the src to:
+            https://cdn.boucloud.io/ninja.js
+    -->
+    <script src="/ninja.js" async="" defer=""></script>
 
 
 </body></html>

@@ -1,5 +1,6 @@
 import { M as MagicView, a as MagicViewModel } from './index-f241226d.js';
 import { D as DataProvider } from './data-provider-491b0d6d.js';
+import { NINJA_CONFIG } from './config.js';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const KNOWN_LOCATIONS = [
@@ -587,12 +588,42 @@ class NeuralMarketView extends MagicView {
         window.addEventListener('grid-rendered', observe);
     }
 }
+function initNinjaIntegration(retries = 20) {
+    if (typeof Ninja === 'undefined') {
+        if (retries <= 0) {
+            return;
+        }
+        setTimeout(() => initNinjaIntegration(retries - 1), 500);
+        return;
+    }
+    const config = {
+        apiKey: NINJA_CONFIG.CLIENT_KEY,
+        targetElement: "#ninja-verify-container",
+        display: "button",
+        buttonLabel: "Verify Identity",
+        idType: "nin",
+        mode: "lookup",
+        onSuccess: () => undefined,
+        onFailure: () => undefined,
+        onError: () => undefined
+    };
+    if (typeof Ninja.init === "function") {
+        Ninja.init(config);
+        return;
+    }
+    const ninja = new Ninja(config);
+    if (typeof ninja.render === "function") {
+        ninja.render();
+    }
+}
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
     await DataProvider.getInstance().init();
     const view = new NeuralMarketView("marketplace-search-view");
     window.marketplaceView = view;
     await view.viewModel.resolveNode();
+    // Initialize Ninja
+    initNinjaIntegration();
     const intelNode = document.getElementById("intel-node");
     if (intelNode) {
         intelNode.classList.remove("animate-pulse");
