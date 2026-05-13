@@ -1,21 +1,18 @@
-import { MagicElement, MagicView, MagicViewModel, MagicEvent } from "../../magicui/src/index";
-import { DataProvider } from "./lib/data-provider";
-import { NINJA_CONFIG } from './config';
+import { M as MagicView, a as MagicViewModel } from './index-f241226d.js';
+import { D as DataProvider } from './data-provider-491b0d6d.js';
+import { NINJA_CONFIG } from './config.js';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
 const KNOWN_LOCATIONS = [
     "lagos", "lekki", "ikoyi", "ikeja", "abuja", "port harcourt",
     "ibadan", "enugu", "yaba", "victoria island", "banana island",
     "guzape", "maitama", "asokoro", "wuse", "bodija", "vgc", "epe"
 ];
-
 const UNLISTED_CITIES = [
     "benin", "owerri", "kano", "kaduna", "jos", "onitsha", "calabar",
     "uyo", "warri", "asaba", "aba", "sapele", "ife", "abeokuta",
     "ilorin", "makurdi", "maiduguri"
 ];
-
 const PROPERTY_KEYWORDS = [
     "house", "flat", "apartment", "duplex", "land", "plot", "villa",
     "mansion", "penthouse", "studio", "office", "commercial", "rent",
@@ -24,7 +21,6 @@ const PROPERTY_KEYWORDS = [
     "building", "compound", "floor", "sqft", "m²", "let", "lease",
     ...KNOWN_LOCATIONS
 ];
-
 const GHOST_SUGGESTIONS = [
     "3 bedroom duplex in Lekki",
     "apartment in Ikeja under 50M",
@@ -35,22 +31,18 @@ const GHOST_SUGGESTIONS = [
     "studio flat for rent in Ikeja",
     "5 bed mansion in Maitama Abuja"
 ];
-
 const FALLBACK_PROPERTY_IMAGE = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&h=900";
-
 const PROPERTY_SEARCH_EXAMPLES = ["3 bedroom in Lagos", "apartment for rent Abuja", "land for sale Lekki", "duplex under 150M"];
 const SEARCH_STOP_WORDS = new Set(["in", "at", "for", "the", "and", "or", "me", "show", "find", "under", "over", "above", "below", "around", "about"]);
-
-function isPropertySearchQuery(query: string): boolean {
+function isPropertySearchQuery(query) {
     const lower = query.toLowerCase().trim();
-    if (lower.length === 0) return true;
+    if (lower.length === 0)
+        return true;
     const hasPropertyKeyword = PROPERTY_KEYWORDS.some(keyword => lower.includes(keyword));
     const hasPriceSignal = /\b\d+\s*(m|million|k|thousand)\b/.test(lower);
     return hasPropertyKeyword || hasPriceSignal;
 }
-
 // ─── ViewModel ───────────────────────────────────────────────────────────────
-
 class NeuralViewModel extends MagicViewModel {
     constructor() {
         super();
@@ -60,51 +52,46 @@ class NeuralViewModel extends MagicViewModel {
         this.set("intent", { location: null, price: null, type: null, bed: null });
         this.set("force_search", false);
     }
-
-    updateScanningState(isScanning: boolean) {
+    updateScanningState(isScanning) {
         const intelNode = document.getElementById("intel-node");
-        if (!intelNode) return;
+        if (!intelNode)
+            return;
         if (isScanning) {
             intelNode.classList.add("animate-pulse");
             intelNode.innerText = `NODE: ANALYZING_INTENT_${Math.random().toString(36).substring(7).toUpperCase()}`;
-        } else {
+        }
+        else {
             intelNode.classList.remove("animate-pulse");
             intelNode.innerText = `NODE: SCANNING...`;
         }
     }
-
     detectDevice() {
         return /mobile/i.test(navigator.userAgent) ? "Mobile Node" : "Command Station";
     }
-
     async resolveNode() {
         this.set("location", "NIGERIA MARKET GRID");
     }
 }
-
 // ─── View ─────────────────────────────────────────────────────────────────────
-
 class NeuralMarketView extends MagicView {
-    private selectedType: string = "";
-    private feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    get viewModel(): NeuralViewModel {
-        return this._viewModel as NeuralViewModel;
+    get viewModel() {
+        return this._viewModel;
     }
-    set viewModel(vm: NeuralViewModel) {
+    set viewModel(vm) {
         this._viewModel = vm;
         vm._view = this;
     }
-
-    constructor(id: string) {
+    constructor(id) {
         super(id);
+        this.selectedType = "";
+        this.feedbackTimeout = null;
+        // ─── Voice Search ──────────────────────────────────────────────────────────
+        this.recognition = null;
         this.viewModel = new NeuralViewModel();
-
         document.getElementById("voice-search-btn")?.addEventListener("click", () => this.startVoiceSearch());
         document.getElementById("voice-stop-btn")?.addEventListener("click", () => this.stopVoiceSearch());
         document.getElementById("clear-results-btn")?.addEventListener("click", () => this.clearSearch());
-        document.getElementById("search-input")?.addEventListener("input", event => this.parseConversationalIntent(event as MagicEvent));
-
+        document.getElementById("search-input")?.addEventListener("input", event => this.parseConversationalIntent(event));
         // Search on Enter
         document.getElementById("search-input")?.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
@@ -112,44 +99,33 @@ class NeuralMarketView extends MagicView {
                 this.triggerForceSearch();
             }
         });
-
         // Scanning state on input
         document.getElementById("search-input")?.addEventListener("input", (e) => {
-            this.viewModel.updateScanningState((e.target as HTMLInputElement).value.length > 0);
+            this.viewModel.updateScanningState(e.target.value.length > 0);
         });
-
         this.initFeaturedGrid();
         this.initScrollReveal();
         this.initSuggestionChips();
         this.initTraditionalFilters();
         this.initTypePills();
-
         // Stage controls
         document.getElementById("close-stage-btn")?.addEventListener("click", () => this.exitStage());
     }
-
-    // ─── Voice Search ──────────────────────────────────────────────────────────
-
-    private recognition: any = null;
-
     startVoiceSearch() {
-        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
             this.showFeedback("redirect", `<i class="fas fa-exclamation-triangle"></i> Voice search is not supported in this browser. Please type your search instead.`, []);
             return;
         }
-
-        const input = document.getElementById("search-input") as HTMLInputElement;
+        const input = document.getElementById("search-input");
         const overlay = document.getElementById("voice-overlay");
         const interimEl = document.getElementById("voice-interim-text");
         const voiceBtn = document.getElementById("voice-search-btn");
-
         this.recognition = new SpeechRecognition();
         this.recognition.lang = 'en-NG';
         this.recognition.interimResults = true;
         this.recognition.maxAlternatives = 1;
         this.recognition.continuous = false;
-
         this.recognition.onstart = () => {
             overlay?.classList.remove("d-none");
             voiceBtn?.classList.add("recording");
@@ -158,14 +134,14 @@ class NeuralMarketView extends MagicView {
                 interimEl.classList.remove("has-text");
             }
         };
-
-        this.recognition.onresult = (event: any) => {
+        this.recognition.onresult = (event) => {
             let interim = '';
             let final = '';
             for (let i = event.resultIndex; i < event.results.length; i++) {
                 if (event.results[i].isFinal) {
                     final += event.results[i][0].transcript;
-                } else {
+                }
+                else {
                     interim += event.results[i][0].transcript;
                 }
             }
@@ -179,63 +155,51 @@ class NeuralMarketView extends MagicView {
                 input.dispatchEvent(new Event('input'));
             }
         };
-
         this.recognition.onspeechend = () => this.recognition?.stop();
-
         this.recognition.onend = () => {
             overlay?.classList.add("d-none");
             voiceBtn?.classList.remove("recording");
-            if (input.value.trim()) this.triggerForceSearch();
+            if (input.value.trim())
+                this.triggerForceSearch();
         };
-
         this.recognition.onerror = () => {
             overlay?.classList.add("d-none");
             voiceBtn?.classList.remove("recording");
         };
-
         this.recognition.start();
     }
-
     stopVoiceSearch() {
         this.recognition?.stop();
     }
-
     // ─── Force Search ──────────────────────────────────────────────────────────
-
     triggerForceSearch() {
         this.viewModel.set("force_search", true);
         const terminal = document.getElementById("main-terminal");
         terminal?.classList.add("force-search-active");
-
-        const input = document.getElementById("search-input") as HTMLInputElement;
+        const input = document.getElementById("search-input");
         input?.dispatchEvent(new Event('input'));
-
         setTimeout(() => {
             this.viewModel.set("force_search", false);
             terminal?.classList.remove("force-search-active");
         }, 1200);
     }
-
     // ─── Clear Search ──────────────────────────────────────────────────────────
-
     clearSearch() {
-        const input = document.getElementById("search-input") as HTMLInputElement;
-        if (input) input.value = "";
-        document.getElementById("inline-results")!.style.display = "none";
-        document.getElementById("search-ghost")!.innerText = "";
+        const input = document.getElementById("search-input");
+        if (input)
+            input.value = "";
+        document.getElementById("inline-results").style.display = "none";
+        document.getElementById("search-ghost").innerText = "";
         this.hideFeedback();
         this.viewModel.updateScanningState(false);
     }
-
     // ─── Smart Query Analysis ──────────────────────────────────────────────────
-
-    analyzeQuery(query: string): { type: string; icon: string; message: string; chips: string[] } | null {
+    analyzeQuery(query) {
         const lower = query.toLowerCase().trim();
-        if (lower.length < 4) return null;
-
+        if (lower.length < 4)
+            return null;
         // Non-property query detection
         const looksLikePriceOnly = /^\d+[mk]?\s*(million|thousand)?$/.test(lower);
-
         if (!isPropertySearchQuery(lower) && !looksLikePriceOnly) {
             return {
                 type: "redirect",
@@ -244,7 +208,6 @@ class NeuralMarketView extends MagicView {
                 chips: PROPERTY_SEARCH_EXAMPLES
             };
         }
-
         // Unlisted city detection
         for (const city of UNLISTED_CITIES) {
             if (lower.includes(city)) {
@@ -257,7 +220,6 @@ class NeuralMarketView extends MagicView {
                 };
             }
         }
-
         // Price too low (under ₦10M threshold)
         const lowBudgetMatch = lower.match(/(\d+)\s*(k|thousand)/i);
         if (lowBudgetMatch) {
@@ -268,7 +230,6 @@ class NeuralMarketView extends MagicView {
                 chips: ["under ₦50M", "₦50M – ₦100M", "₦100M – ₦250M", "₦250M+"]
             };
         }
-
         // Very large single number without context (e.g. just "5000000")
         const bareNumberMatch = lower.match(/^(\d[\d,]+)$/);
         if (bareNumberMatch) {
@@ -279,14 +240,12 @@ class NeuralMarketView extends MagicView {
                 chips: ["duplex under 100M Lagos", "3 bedroom flat around 50M Ikeja", "mansion above 500M Ikoyi"]
             };
         }
-
         return null;
     }
-
-    showFeedback(type: string, message: string, chips: string[]) {
+    showFeedback(type, message, chips) {
         const el = document.getElementById("search-feedback");
-        if (!el) return;
-
+        if (!el)
+            return;
         el.className = `search-feedback feedback-${type}`;
         el.innerHTML = `
             <div class="feedback-msg">${message}</div>
@@ -295,147 +254,137 @@ class NeuralMarketView extends MagicView {
             </div>` : ''}
         `;
         el.classList.remove("d-none");
-
         // Wire up chip clicks
         el.querySelectorAll(".feedback-chip").forEach(chip => {
             chip.addEventListener("click", () => {
-                const input = document.getElementById("search-input") as HTMLInputElement;
+                const input = document.getElementById("search-input");
                 if (input) {
-                    input.value = (chip as HTMLElement).dataset.query || chip.textContent || "";
+                    input.value = chip.dataset.query || chip.textContent || "";
                     input.dispatchEvent(new Event('input'));
                     this.triggerForceSearch();
                 }
             });
         });
     }
-
     hideFeedback() {
         const el = document.getElementById("search-feedback");
         el?.classList.add("d-none");
     }
-
     // ─── Conversational Intent Parser ─────────────────────────────────────────
-
-    parseConversationalIntent(event: MagicEvent) {
-        const input = event.target as HTMLInputElement;
+    parseConversationalIntent(event) {
+        const input = event.target;
         const raw = input.value;
         const normalized = raw.toLowerCase();
         const ghostElement = document.getElementById("search-ghost");
-
         // Ghost autocomplete suggestion
         if (normalized.length > 2) {
             const match = GHOST_SUGGESTIONS.find(s => s.toLowerCase().startsWith(normalized));
-            if (ghostElement) ghostElement.innerText = match || "";
-        } else if (ghostElement) {
+            if (ghostElement)
+                ghostElement.innerText = match || "";
+        }
+        else if (ghostElement) {
             ghostElement.innerText = "";
         }
-
         // Smart feedback (debounced)
-        if (this.feedbackTimeout) clearTimeout(this.feedbackTimeout);
+        if (this.feedbackTimeout)
+            clearTimeout(this.feedbackTimeout);
         this.feedbackTimeout = setTimeout(() => {
             if (normalized.length >= 4) {
                 const feedback = this.analyzeQuery(normalized);
                 if (feedback) {
                     this.showFeedback(feedback.type, `<i class="${feedback.icon}"></i> ${feedback.message}`, feedback.chips);
-                } else {
+                }
+                else {
                     this.hideFeedback();
                 }
-            } else {
+            }
+            else {
                 this.hideFeedback();
             }
         }, 350);
-
         // Parse intent for metadata
         const intent = { ...this.viewModel.get("intent") };
         intent.location = KNOWN_LOCATIONS.find(c => normalized.includes(c)) || null;
-
         const priceMatch = normalized.match(/(\d+)\s*(m|million|k)/);
         intent.price = priceMatch ? priceMatch[0] : null;
-
         const types = ["duplex", "terrace", "flat", "apartment", "studio", "penthouse", "land", "commercial", "mansion"];
         intent.type = types.find(t => normalized.includes(t)) || null;
-
         const bedMatch = normalized.match(/(\d+)\s*bed/);
         intent.bed = bedMatch ? bedMatch[0] : null;
-
         this.viewModel.set("intent", intent);
-
         // Results display
         const inlineResults = document.getElementById("inline-results");
         const inlineGrid = document.getElementById("inline-results-grid");
         const resultsCount = document.getElementById("results-count");
-
         const hasFilters = this.selectedType !== "" ||
-            Array.from(document.querySelectorAll('.filter-pill select')).some((s: any) => s.value && s.value !== 'nigeria' && s.value !== '');
-
+            Array.from(document.querySelectorAll('.filter-pill select')).some((s) => s.value && s.value !== 'nigeria' && s.value !== '');
         if (normalized.length >= 2 && !isPropertySearchQuery(normalized)) {
             const feedback = this.analyzeQuery(normalized);
             if (feedback) {
                 this.showFeedback(feedback.type, `<i class="${feedback.icon}"></i> ${feedback.message}`, feedback.chips);
             }
-            if (inlineResults) inlineResults.style.display = "none";
+            if (inlineResults)
+                inlineResults.style.display = "none";
             return;
         }
-
         if (normalized.length >= 2 || hasFilters) {
             const isForce = this.viewModel.get("force_search");
             const delay = isForce ? 0 : 380;
-
             if (!isForce && inlineGrid) {
                 inlineGrid.innerHTML = `<div class="inline-no-results"><span class="text-accent animate-pulse">SCANNING NEURAL CACHE...</span></div>`;
-                if (inlineResults) inlineResults.style.display = "block";
+                if (inlineResults)
+                    inlineResults.style.display = "block";
             }
-
             setTimeout(() => {
                 this.renderInlineResults(normalized, inlineGrid, resultsCount);
-                if (inlineResults) inlineResults.style.display = "block";
+                if (inlineResults)
+                    inlineResults.style.display = "block";
             }, delay);
-        } else {
-            if (inlineResults) inlineResults.style.display = "none";
+        }
+        else {
+            if (inlineResults)
+                inlineResults.style.display = "none";
         }
     }
-
     // ─── Filtering Logic ──────────────────────────────────────────────────────
-
-    private getFilteredProperties(query: string) {
+    getFilteredProperties(query) {
         if (query.trim().length >= 2 && !isPropertySearchQuery(query)) {
             return [];
         }
-
         const tokens = query.toLowerCase().split(/\s+/).filter(t => t.length >= 2 && !SEARCH_STOP_WORDS.has(t));
         const dataProvider = DataProvider.getInstance();
         const allProps = dataProvider.getAllProperties();
-
-        const locFilter = (document.getElementById('filter-location') as HTMLSelectElement)?.value;
+        const locFilter = document.getElementById('filter-location')?.value;
         const typeFilter = this.selectedType;
-        const minPrice = parseInt((document.getElementById('filter-min-price') as HTMLSelectElement)?.value) || 0;
-        const maxPrice = parseInt((document.getElementById('filter-max-price') as HTMLSelectElement)?.value) || Infinity;
-        const dateFilter = (document.getElementById('filter-date') as HTMLSelectElement)?.value;
-
-        let dateCutoff: Date | null = null;
+        const minPrice = parseInt(document.getElementById('filter-min-price')?.value) || 0;
+        const maxPrice = parseInt(document.getElementById('filter-max-price')?.value) || Infinity;
+        const dateFilter = document.getElementById('filter-date')?.value;
+        let dateCutoff = null;
         if (dateFilter) {
             const now = new Date();
-            if (dateFilter === '24h') dateCutoff = new Date(now.getTime() - 86400000);
-            else if (dateFilter === '7d') dateCutoff = new Date(now.getTime() - 604800000);
-            else if (dateFilter === '30d') dateCutoff = new Date(now.getTime() - 2592000000);
+            if (dateFilter === '24h')
+                dateCutoff = new Date(now.getTime() - 86400000);
+            else if (dateFilter === '7d')
+                dateCutoff = new Date(now.getTime() - 604800000);
+            else if (dateFilter === '30d')
+                dateCutoff = new Date(now.getTime() - 2592000000);
         }
-
         const results = allProps.map(p => {
             // Location Filter
-            if (locFilter && locFilter !== 'nigeria' && !p.location.toLowerCase().includes(locFilter.toLowerCase())) return { property: p, score: 0 };
-
+            if (locFilter && locFilter !== 'nigeria' && !p.location.toLowerCase().includes(locFilter.toLowerCase()))
+                return { property: p, score: 0 };
             // Type Filter
-            if (typeFilter && !p.category.toLowerCase().includes(typeFilter.toLowerCase()) && !p.title.toLowerCase().includes(typeFilter.toLowerCase())) return { property: p, score: 0 };
-
+            if (typeFilter && !p.category.toLowerCase().includes(typeFilter.toLowerCase()) && !p.title.toLowerCase().includes(typeFilter.toLowerCase()))
+                return { property: p, score: 0 };
             // Price Filter
             const numericPrice = parseInt(p.price.replace(/[^\d]/g, ''));
-            if (numericPrice && (numericPrice < minPrice || numericPrice > maxPrice)) return { property: p, score: 0 };
-
+            if (numericPrice && (numericPrice < minPrice || numericPrice > maxPrice))
+                return { property: p, score: 0 };
             // Date Filter
             if (dateCutoff && p.datePosted) {
-                if (new Date(p.datePosted) < dateCutoff) return { property: p, score: 0 };
+                if (new Date(p.datePosted) < dateCutoff)
+                    return { property: p, score: 0 };
             }
-
             // Text Search
             const content = `${p.title} ${p.location} ${p.description} ${p.category}`.toLowerCase();
             const matchedTokens = tokens.filter(t => content.includes(t));
@@ -445,20 +394,16 @@ class NeuralMarketView extends MagicView {
             .filter(result => result.score > 0)
             .sort((a, b) => b.score - a.score)
             .map(result => result.property);
-
         return results;
     }
-
     // ─── Render Inline Results ────────────────────────────────────────────────
-
-    renderInlineResults(query: string, container: HTMLElement | null, countEl: HTMLElement | null) {
-        if (!container) return;
+    renderInlineResults(query, container, countEl) {
+        if (!container)
+            return;
         const filtered = this.getFilteredProperties(query);
-
         if (countEl) {
             countEl.textContent = `${filtered.length} RESULT${filtered.length !== 1 ? 'S' : ''}`;
         }
-
         if (filtered.length === 0) {
             const tips = this.getNoResultTips(query);
             container.innerHTML = `
@@ -468,7 +413,6 @@ class NeuralMarketView extends MagicView {
                 </div>`;
             return;
         }
-
         container.innerHTML = filtered.map(p => `
             <div class="inline-result-card" onclick="window.marketplaceView.enterStage(${p.id})" title="${p.title}" role="button" tabindex="0" aria-label="Preview ${p.title}">
                 <div class="inline-result-img-wrap">
@@ -483,65 +427,59 @@ class NeuralMarketView extends MagicView {
             </div>
         `).join('');
     }
-
     // ─── Stage Logic ──────────────────────────────────────────────────────────
-
-    async enterStage(propId: number) {
+    async enterStage(propId) {
         const dataProvider = DataProvider.getInstance();
         const prop = dataProvider.getPropertyById(propId);
-        if (!prop) return;
-
+        if (!prop)
+            return;
         const stage = document.getElementById("property-stage");
-        if (!stage) return;
-
+        if (!stage)
+            return;
         // Populate Stage
-        const mainImg = document.getElementById("stage-main-img") as HTMLImageElement;
+        const mainImg = document.getElementById("stage-main-img");
         if (mainImg) {
             mainImg.src = prop.image || FALLBACK_PROPERTY_IMAGE;
             mainImg.onerror = () => { mainImg.src = FALLBACK_PROPERTY_IMAGE; };
         }
-
         const titleEl = document.getElementById("stage-title");
-        if (titleEl) titleEl.innerText = prop.title;
-
+        if (titleEl)
+            titleEl.innerText = prop.title;
         const priceEl = document.getElementById("stage-price");
-        if (priceEl) priceEl.innerText = `₦${prop.price}`;
-
+        if (priceEl)
+            priceEl.innerText = `₦${prop.price}`;
         const catEl = document.getElementById("stage-category");
-        if (catEl) catEl.innerText = prop.category.toUpperCase();
-
+        if (catEl)
+            catEl.innerText = prop.category.toUpperCase();
         const locEl = document.getElementById("stage-location");
-        if (locEl) locEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${prop.location}`;
-
+        if (locEl)
+            locEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${prop.location}`;
         const bedsEl = document.getElementById("stage-beds");
-        if (bedsEl) bedsEl.innerText = (prop.bedrooms || 0).toString();
-
+        if (bedsEl)
+            bedsEl.innerText = (prop.bedrooms || 0).toString();
         const bathsEl = document.getElementById("stage-baths");
-        if (bathsEl) bathsEl.innerText = (prop.bathrooms || 0).toString();
-
+        if (bathsEl)
+            bathsEl.innerText = (prop.bathrooms || 0).toString();
         const sqftEl = document.getElementById("stage-sqft");
-        if (sqftEl) sqftEl.innerText = (prop.sqft || 0).toLocaleString();
-
+        if (sqftEl)
+            sqftEl.innerText = (prop.sqft || 0).toLocaleString();
         const descEl = document.getElementById("stage-desc");
-        if (descEl) descEl.innerText = prop.description || "No intelligence brief available for this asset.";
-
+        if (descEl)
+            descEl.innerText = prop.description || "No intelligence brief available for this asset.";
         const amenitiesList = document.getElementById("stage-amenities-list");
         if (amenitiesList) {
             amenitiesList.innerHTML = (prop.amenities || []).map(a => `<span class="amenity-tag">${a}</span>`).join('');
         }
-
-        const contactBtn = document.getElementById("stage-contact-btn") as HTMLAnchorElement;
+        const contactBtn = document.getElementById("stage-contact-btn");
         if (contactBtn) {
             contactBtn.onclick = () => window.open(prop.original_url || '#', '_blank');
         }
-
         // Show Stage
         stage.style.display = 'flex';
         stage.classList.remove("d-none");
         document.body.style.overflow = "hidden";
         this.viewModel.set("is_stage_active", true);
     }
-
     exitStage() {
         const stage = document.getElementById("property-stage");
         if (stage) {
@@ -551,42 +489,32 @@ class NeuralMarketView extends MagicView {
             this.viewModel.set("is_stage_active", false);
         }
     }
-
     closeStage() {
         this.exitStage();
     }
-
-    private getNoResultTips(query: string): string {
+    getNoResultTips(query) {
         const lower = query.toLowerCase();
-
         // Detect if it was a location issue
         for (const city of UNLISTED_CITIES) {
             if (lower.includes(city)) {
-                return ['Lagos', 'Lekki', 'Abuja', 'Ikoyi'].map(c =>
-                    `<span class="feedback-chip" onclick="document.getElementById('search-input').value=document.getElementById('search-input').value.replace('${city}','${c.toLowerCase()}');document.getElementById('search-input').dispatchEvent(new Event('input'))">${c}</span>`
-                ).join('');
+                return ['Lagos', 'Lekki', 'Abuja', 'Ikoyi'].map(c => `<span class="feedback-chip" onclick="document.getElementById('search-input').value=document.getElementById('search-input').value.replace('${city}','${c.toLowerCase()}');document.getElementById('search-input').dispatchEvent(new Event('input'))">${c}</span>`).join('');
             }
         }
-
         // Suggest dropping some filters
-        const locFilter = (document.getElementById('filter-location') as HTMLSelectElement)?.value;
+        const locFilter = document.getElementById('filter-location')?.value;
         if (locFilter && locFilter !== 'nigeria') {
             return `<span class="feedback-chip" onclick="document.getElementById('filter-location').value='nigeria';document.getElementById('filter-location').dispatchEvent(new Event('change'))">Clear location filter</span>`;
         }
-
         return '';
     }
-
     // ─── Render Bento Grid ────────────────────────────────────────────────────
-
-    renderBentoGridData(items: any[], container: HTMLElement | null) {
-        if (!container) return;
-
+    renderBentoGridData(items, container) {
+        if (!container)
+            return;
         if (items.length === 0) {
             container.innerHTML = `<div style="padding:3rem;text-align:center;grid-column:1/-1;" class="text-label">NO SIGNAL MATCHED IN NEURAL CACHE</div>`;
             return;
         }
-
         container.innerHTML = items.map((p, i) => `
             <a href="property.html?id=${p.id}" class="bento-card" style="transition-delay:${i * 0.04}s;">
                 <div style="position:relative;overflow:hidden;">
@@ -606,9 +534,7 @@ class NeuralMarketView extends MagicView {
             </a>
         `).join('');
     }
-
     // ─── Featured Grid ────────────────────────────────────────────────────────
-
     async initFeaturedGrid() {
         const container = document.getElementById("featured-grid");
         const dataProvider = DataProvider.getInstance();
@@ -616,18 +542,16 @@ class NeuralMarketView extends MagicView {
         const featured = dataProvider.getAllProperties().slice(0, 6);
         this.renderBentoGridData(featured, container);
     }
-
     // ─── Filters & Pills ──────────────────────────────────────────────────────
-
     initTraditionalFilters() {
         document.querySelectorAll('.filter-pill select').forEach(select => {
             select.addEventListener('change', () => {
-                const input = document.getElementById('search-input') as HTMLInputElement;
-                if (input) input.dispatchEvent(new Event('input'));
+                const input = document.getElementById('search-input');
+                if (input)
+                    input.dispatchEvent(new Event('input'));
             });
         });
     }
-
     initTypePills() {
         const pills = document.querySelectorAll('.type-pill');
         pills.forEach(pill => {
@@ -635,14 +559,14 @@ class NeuralMarketView extends MagicView {
                 pills.forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
                 this.selectedType = pill.getAttribute('data-type') || "";
-                const input = document.getElementById('search-input') as HTMLInputElement;
-                if (input) input.dispatchEvent(new Event('input'));
+                const input = document.getElementById('search-input');
+                if (input)
+                    input.dispatchEvent(new Event('input'));
             });
         });
     }
-
     initSuggestionChips() {
-        const input = document.getElementById('search-input') as HTMLInputElement;
+        const input = document.getElementById('search-input');
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 input.value = chip.textContent?.replace(/"/g, '') || "";
@@ -651,37 +575,19 @@ class NeuralMarketView extends MagicView {
             });
         });
     }
-
     // ─── Scroll Reveal ────────────────────────────────────────────────────────
-
     initScrollReveal() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('revealed');
+                if (entry.isIntersecting)
+                    entry.target.classList.add('revealed');
             });
         }, { threshold: 0.1 });
-
         const observe = () => document.querySelectorAll('.bento-card, section, .featured-header').forEach(el => observer.observe(el));
         observe();
         window.addEventListener('grid-rendered', observe);
     }
 }
-
-// ─── Ninja Integration ────────────────────────────────────────────────────────
-declare var Ninja: any;
-
-type NinjaWidgetConfig = {
-    apiKey: string;
-    targetElement: string;
-    display: "form";
-    buttonLabel: string;
-    idType: "nin";
-    mode: "lookup";
-    onSuccess: (data: unknown) => void;
-    onFailure: (result: unknown) => void;
-    onError: (error: unknown) => void;
-};
-
 function initNinjaIntegration(retries = 20) {
     if (typeof Ninja === 'undefined') {
         if (retries <= 0) {
@@ -690,8 +596,7 @@ function initNinjaIntegration(retries = 20) {
         setTimeout(() => initNinjaIntegration(retries - 1), 500);
         return;
     }
-
-    const config: NinjaWidgetConfig = {
+    const config = {
         apiKey: NINJA_CONFIG.CLIENT_KEY,
         targetElement: "#ninja-verify-container",
         display: "button",
@@ -702,37 +607,29 @@ function initNinjaIntegration(retries = 20) {
         onFailure: () => undefined,
         onError: () => undefined
     };
-
     if (typeof Ninja.init === "function") {
         Ninja.init(config);
         return;
     }
-
     const ninja = new Ninja(config);
     if (typeof ninja.render === "function") {
         ninja.render();
     }
 }
-
 // ─── Entry Point ──────────────────────────────────────────────────────────────
-
 document.addEventListener("DOMContentLoaded", async () => {
     await DataProvider.getInstance().init();
-
     const view = new NeuralMarketView("marketplace-search-view");
-    (window as any).marketplaceView = view;
+    window.marketplaceView = view;
     await view.viewModel.resolveNode();
-
     // Initialize Ninja
     initNinjaIntegration();
-
     const intelNode = document.getElementById("intel-node");
     if (intelNode) {
         intelNode.classList.remove("animate-pulse");
         intelNode.classList.add("animate-fade-in");
         intelNode.innerText = `NODE: ${(await view.viewModel.get("location"))}`;
     }
-
     const deviceNode = document.getElementById("device-node");
     if (deviceNode) {
         deviceNode.classList.remove("animate-pulse");
