@@ -1,7 +1,7 @@
 var Ninja = (function () {
     'use strict';
 
-    const API_BASE = "https://api.ninja.boucloud.io";
+    const API_BASE = "http://localhost:8222";
     const ID_LENGTHS = { nin: 11, bvn: 11, ndl: 12 };
     const ID_LABELS = {
         nin: "National Identity Number",

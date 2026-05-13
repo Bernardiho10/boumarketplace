@@ -589,13 +589,13 @@ class NeuralMarketView extends MagicView {
     }
 }
 // Manual Direct API Integration (fallback when SDK lookup fails)
-async function performManualIdentityLookup(idNumber, sessionToken) {
+async function performManualIdentityLookup(idNumber, apiKey) {
     try {
         const response = await fetch(`${NINJA_CONFIG.API_URL}/api/identity/identify?widget=dashboard`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-API-Key": sessionToken // Use X-API-Key header instead of Authorization: Bearer
+                "X-API-Key": apiKey
             },
             body: JSON.stringify({
                 idType: "nin",
@@ -614,31 +614,7 @@ async function performManualIdentityLookup(idNumber, sessionToken) {
         throw error;
     }
 }
-// Fetch session token from Ninja backend
-async function fetchSessionToken() {
-    try {
-        const response = await fetch(`${NINJA_CONFIG.BACKEND_URL}/auth/session`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                client_key: NINJA_CONFIG.CLIENT_KEY,
-                client_secret: NINJA_CONFIG.SECRET_KEY
-            })
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to fetch session token: ${response.status} ${response.statusText}`);
-        }
-        const data = await response.json();
-        return data.token;
-    }
-    catch (error) {
-        console.error("Failed to fetch session token:", error);
-        throw error;
-    }
-}
-async function initNinjaIntegration(retries = 20) {
+function initNinjaIntegration(retries = 20) {
     if (typeof Ninja === 'undefined') {
         if (retries <= 0) {
             return;
@@ -646,18 +622,8 @@ async function initNinjaIntegration(retries = 20) {
         setTimeout(() => initNinjaIntegration(retries - 1), 500);
         return;
     }
-    // Fetch session token from Ninja backend before initializing SDK
-    let sessionToken;
-    try {
-        sessionToken = await fetchSessionToken();
-        console.log("Session token fetched successfully");
-    }
-    catch (error) {
-        console.error("Failed to fetch session token, SDK initialization aborted:", error);
-        return;
-    }
     const config = {
-        apiKey: sessionToken, // Use session token instead of public key
+        apiKey: NINJA_CONFIG.CLIENT_KEY, // Use public key directly
         targetElement: "#ninja-container",
         display: "form",
         buttonLabel: "Verify Identity",
@@ -669,12 +635,10 @@ async function initNinjaIntegration(retries = 20) {
             if (!data || Object.keys(data).length === 0 || !data.first_name) {
                 console.warn("SDK returned incomplete data, attempting manual lookup...");
                 try {
-                    // Extract ID number from the form if available
                     const idInput = document.querySelector('#ninja-container input[type="text"]');
                     if (idInput && idInput.value) {
-                        const manualData = await performManualIdentityLookup(idInput.value, sessionToken);
+                        const manualData = await performManualIdentityLookup(idInput.value, NINJA_CONFIG.CLIENT_KEY);
                         console.log("Manual lookup success:", manualData);
-                        // Trigger custom modal with manual data
                         showKycResultModal(manualData);
                     }
                 }
@@ -683,18 +647,15 @@ async function initNinjaIntegration(retries = 20) {
                 }
             }
             else {
-                // SDK returned valid data, use it directly
                 showKycResultModal(data);
             }
         },
         onFailure: (result) => {
             console.log("SDK Failure (no record found):", result);
-            // You are not charged for not-found responses
             showKycResultModal(null, "No record found for the provided NIN");
         },
         onError: (error) => {
             console.error("SDK Error:", error);
-            // Network error or server-side error
             showKycResultModal(null, `Verification error: ${error.message || "Unknown error"}`);
         }
     };
