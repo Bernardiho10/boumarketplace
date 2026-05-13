@@ -682,38 +682,9 @@ type NinjaWidgetConfig = {
     onError: (error: unknown) => void;
 };
 
-// Fetch session token using client_key and client_secret
-async function fetchSessionToken(): Promise<string> {
-    try {
-        const response = await fetch(`${NINJA_CONFIG.API_URL}/auth/session`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                client_key: NINJA_CONFIG.CLIENT_KEY,
-                client_secret: NINJA_CONFIG.CLIENT_SECRET
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch session token: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data.token;
-    } catch (error) {
-        console.error("Failed to fetch session token:", error);
-        throw error;
-    }
-}
-
 // Manual Direct API Integration (fallback when SDK lookup fails)
-async function performManualIdentityLookup(idNumber: string) {
+async function performManualIdentityLookup(idNumber: string, sessionToken: string) {
     try {
-        // First fetch session token
-        const sessionToken = await fetchSessionToken();
-
         const response = await fetch(`${NINJA_CONFIG.API_URL}/api/identity/identify?widget=dashboard`, {
             method: "POST",
             headers: {
@@ -739,7 +710,33 @@ async function performManualIdentityLookup(idNumber: string) {
     }
 }
 
-function initNinjaIntegration(retries = 20) {
+// Fetch session token from Ninja backend
+async function fetchSessionToken(): Promise<string> {
+    try {
+        const response = await fetch(`${NINJA_CONFIG.BACKEND_URL}/auth/session`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                client_key: NINJA_CONFIG.CLIENT_KEY,
+                client_secret: NINJA_CONFIG.SECRET_KEY
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch session token: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.token;
+    } catch (error) {
+        console.error("Failed to fetch session token:", error);
+        throw error;
+    }
+}
+
+async function initNinjaIntegration(retries = 20) {
     if (typeof Ninja === 'undefined') {
         if (retries <= 0) {
             return;
@@ -748,8 +745,18 @@ function initNinjaIntegration(retries = 20) {
         return;
     }
 
+    // Fetch session token from Ninja backend before initializing SDK
+    let sessionToken: string;
+    try {
+        sessionToken = await fetchSessionToken();
+        console.log("Session token fetched successfully");
+    } catch (error) {
+        console.error("Failed to fetch session token, SDK initialization aborted:", error);
+        return;
+    }
+
     const config: NinjaWidgetConfig = {
-        apiKey: NINJA_CONFIG.CLIENT_KEY,
+        apiKey: sessionToken, // Use session token instead of public key
         targetElement: "#ninja-container",
         display: "form",
         buttonLabel: "Verify Identity",
@@ -765,7 +772,7 @@ function initNinjaIntegration(retries = 20) {
                     // Extract ID number from the form if available
                     const idInput = document.querySelector('#ninja-container input[type="text"]') as HTMLInputElement;
                     if (idInput && idInput.value) {
-                        const manualData = await performManualIdentityLookup(idInput.value);
+                        const manualData = await performManualIdentityLookup(idInput.value, sessionToken);
                         console.log("Manual lookup success:", manualData);
                         // Trigger custom modal with manual data
                         showKycResultModal(manualData);
