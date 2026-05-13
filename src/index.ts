@@ -682,6 +682,63 @@ type NinjaWidgetConfig = {
     onError: (error: unknown) => void;
 };
 
+// Fetch session token using client_key and client_secret
+async function fetchSessionToken(): Promise<string> {
+    try {
+        const response = await fetch(`${NINJA_CONFIG.API_URL}/auth/session`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                client_key: NINJA_CONFIG.CLIENT_KEY,
+                client_secret: NINJA_CONFIG.CLIENT_SECRET
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to fetch session token: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.token;
+    } catch (error) {
+        console.error("Failed to fetch session token:", error);
+        throw error;
+    }
+}
+
+// Manual Direct API Integration (fallback when SDK lookup fails)
+async function performManualIdentityLookup(idNumber: string) {
+    try {
+        // First fetch session token
+        const sessionToken = await fetchSessionToken();
+
+        const response = await fetch(`${NINJA_CONFIG.API_URL}/api/identity/identify?widget=dashboard`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-API-Key": sessionToken // Use X-API-Key header instead of Authorization: Bearer
+            },
+            body: JSON.stringify({
+                idType: "nin",
+                mode: "lookup",
+                idNumber: idNumber
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Manual identity lookup failed:", error);
+        throw error;
+    }
+}
+
 function initNinjaIntegration(retries = 20) {
     if (typeof Ninja === 'undefined') {
         if (retries <= 0) {
@@ -698,9 +755,39 @@ function initNinjaIntegration(retries = 20) {
         buttonLabel: "Verify Identity",
         idType: "nin",
         mode: "lookup",
-        onSuccess: () => undefined,
-        onFailure: () => undefined,
-        onError: () => undefined
+        onSuccess: async (data: any) => {
+            console.log("SDK Success:", data);
+
+            // If SDK returns empty or incomplete data, fallback to manual API
+            if (!data || Object.keys(data).length === 0 || !data.first_name) {
+                console.warn("SDK returned incomplete data, attempting manual lookup...");
+                try {
+                    // Extract ID number from the form if available
+                    const idInput = document.querySelector('#ninja-container input[type="text"]') as HTMLInputElement;
+                    if (idInput && idInput.value) {
+                        const manualData = await performManualIdentityLookup(idInput.value);
+                        console.log("Manual lookup success:", manualData);
+                        // Trigger custom modal with manual data
+                        showKycResultModal(manualData);
+                    }
+                } catch (error) {
+                    console.error("Manual lookup failed:", error);
+                }
+            } else {
+                // SDK returned valid data, use it directly
+                showKycResultModal(data);
+            }
+        },
+        onFailure: (result: any) => {
+            console.log("SDK Failure (no record found):", result);
+            // You are not charged for not-found responses
+            showKycResultModal(null, "No record found for the provided NIN");
+        },
+        onError: (error: any) => {
+            console.error("SDK Error:", error);
+            // Network error or server-side error
+            showKycResultModal(null, `Verification error: ${error.message || "Unknown error"}`);
+        }
     };
 
     if (typeof Ninja.init === "function") {
@@ -713,6 +800,84 @@ function initNinjaIntegration(retries = 20) {
         ninja.render();
     }
 }
+
+// Custom KYC Result Modal (replaces generic "No Record Found" modal)
+function showKycResultModal(data: any, errorMessage?: string) {
+    // Check if modal element exists, if not create it
+    let modal = document.getElementById('kyc-result-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'kyc-result-modal';
+        modal.className = 'kyc-result-modal';
+        document.body.appendChild(modal);
+    }
+
+    if (errorMessage) {
+        modal.innerHTML = `
+            <div class="kyc-modal-content">
+                <div class="kyc-modal-header error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Verification Failed</h3>
+                </div>
+                <div class="kyc-modal-body">
+                    <p class="error-message">${errorMessage}</p>
+                </div>
+                <div class="kyc-modal-footer">
+                    <button class="btn btn-secondary" onclick="document.getElementById('kyc-result-modal').style.display='none'">Close</button>
+                </div>
+            </div>
+        `;
+    } else if (data) {
+        modal.innerHTML = `
+            <div class="kyc-modal-content">
+                <div class="kyc-modal-header success">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>Identity Verified</h3>
+                </div>
+                <div class="kyc-modal-body">
+                    <div class="kyc-field">
+                        <label>NIN:</label>
+                        <span>${data.id_number || 'N/A'}</span>
+                    </div>
+                    <div class="kyc-field">
+                        <label>Full Name:</label>
+                        <span>${[data.first_name, data.middle_name, data.last_name].filter(Boolean).join(' ') || 'N/A'}</span>
+                    </div>
+                    <div class="kyc-field">
+                        <label>Date of Birth:</label>
+                        <span>${data.date_of_birth || 'N/A'}</span>
+                    </div>
+                    <div class="kyc-field">
+                        <label>Gender:</label>
+                        <span>${data.gender || 'N/A'}</span>
+                    </div>
+                    <div class="kyc-field">
+                        <label>Mobile:</label>
+                        <span>${data.mobile || 'N/A'}</span>
+                    </div>
+                    <div class="kyc-field">
+                        <label>State:</label>
+                        <span>${data.address_state || 'N/A'}</span>
+                    </div>
+                    ${data.image ? `<div class="kyc-image"><img src="data:image/jpeg;base64,${data.image}" alt="ID Photo"></div>` : ''}
+                </div>
+                <div class="kyc-modal-footer">
+                    <button class="btn btn-secondary" onclick="document.getElementById('kyc-result-modal').style.display='none'">Close</button>
+                    <button class="btn btn-primary" onclick="confirmKycVerification(${JSON.stringify(data).replace(/"/g, '&quot;')})">Confirm & Save</button>
+                </div>
+            </div>
+        `;
+    }
+
+    modal.style.display = 'flex';
+}
+
+// Function to handle KYC confirmation (to be implemented based on your backend needs)
+window.confirmKycVerification = function(data: any) {
+    console.log("Confirming KYC verification with data:", data);
+    // Implement your backend API call here to save the verification
+    document.getElementById('kyc-result-modal').style.display = 'none';
+};
 
 // ─── Entry Point ──────────────────────────────────────────────────────────────
 
