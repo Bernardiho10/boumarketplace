@@ -1443,3 +1443,17 @@ h1, h2, h3 {
     font-size: 0.68rem;
     line-height: 1.35;
 }
+
+/* ========================
+   NINJA VERIFY LAUNCHER
+======================== */
+
+#ninja-verify-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* ========================
+   END OF MARKETPLACE STYLES
+======================== */
+

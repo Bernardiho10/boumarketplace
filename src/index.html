@@ -34,8 +34,11 @@
 
             <!-- Minimalist Headline -->
             <div class="hero-text-block mb-5">
-                <h1 class="text-title main-headline" style="text-align: center;"><span class="text-accent">BOU</span> Marketplace</h1>
-                <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria's Most Exclusive Real Estate Properties</p>
+                <h1 class="text-title main-headline" style="text-align: center;"><span class="text-accent">BOU</span>
+                    Marketplace</h1>
+                <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria's Most Exclusive Real
+                    Estate Properties</p>
+                <div id="ninja-container" class="mt-3"></div>
             </div>
 
             <!-- Traditional Filters (Styled as Pills) -->
@@ -135,8 +138,7 @@
                     <div class="search-input-row">
                         <div id="search-ghost" class="ghost-layer"></div>
                         <input type="text" id="search-input"
-                            placeholder="e.g. Find a 4-bedroom duplex in Lekki under 150M"
-                            spellcheck="false"
+                            placeholder="e.g. Find a 4-bedroom duplex in Lekki under 150M" spellcheck="false"
                             autocomplete="off">
                         <button id="voice-search-btn" class="voice-btn" title="Voice Search">
                             <i class="fas fa-microphone"></i>
@@ -149,7 +151,8 @@
 
                 <div class="terminal-footer-hint mt-2">
                     <span class="text-label" style="font-size: 0.6rem; opacity: 0.3;">
-                        <i class="fas fa-bolt me-1"></i> PRESS ENTER TO SEARCH &nbsp;·&nbsp; <i class="fas fa-microphone me-1"></i> CLICK MIC FOR VOICE
+                        <i class="fas fa-bolt me-1"></i> PRESS ENTER TO SEARCH &nbsp;·&nbsp; <i
+                            class="fas fa-microphone me-1"></i> CLICK MIC FOR VOICE
                     </span>
                 </div>
 
@@ -185,7 +188,8 @@
     <section class="featured-section container mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="text-title" style="font-size: 1.5rem;">Featured Collections</h2>
-            <span class="text-accent" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+            <span class="text-accent"
+                style="font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
                 Neural Analysis Updated
             </span>
         </div>
@@ -243,75 +247,75 @@
 
 </div>
 
-    <!-- ════════════════════════════════════════
+<!-- ════════════════════════════════════════
          CINEMATIC STAGE (Detail View Overlay)
          ════════════════════════════════════════ -->
-    <div id="property-stage" class="stage-container d-none">
-        <button id="close-stage-btn" class="stage-close-btn">
-            <i class="fas fa-arrow-left"></i> Back to Marketplace
-        </button>
-        
-        <div class="stage-media">
-            <img id="stage-main-img" src="" alt="Property View">
-            <div class="stage-price-bar">
-                <div class="stage-price-inner">
-                    <div class="stage-price-amount">
-                        <span class="text-label">NEURAL ESTIMATE</span>
-                        <h2 id="stage-price">₦0</h2>
-                    </div>
-                    <div class="stage-price-actions">
-                        <button class="btn-action" id="stage-contact-btn">
-                            <i class="fas fa-paper-plane"></i> Contact Agent
-                        </button>
-                    </div>
+<div id="property-stage" class="stage-container d-none">
+    <button id="close-stage-btn" class="stage-close-btn">
+        <i class="fas fa-arrow-left"></i> Back to Marketplace
+    </button>
+
+    <div class="stage-media">
+        <img id="stage-main-img" src="" alt="Property View">
+        <div class="stage-price-bar">
+            <div class="stage-price-inner">
+                <div class="stage-price-amount">
+                    <span class="text-label">NEURAL ESTIMATE</span>
+                    <h2 id="stage-price">₦0</h2>
                 </div>
-            </div>
-        </div>
-        
-        <div class="stage-info">
-            <div class="detail-scroll">
-                <div class="stage-info-header">
-                    <span id="stage-category" class="text-accent text-label">CATEGORY</span>
-                    <h1 id="stage-title">Property Title</h1>
-                    <p id="stage-location" class="text-muted"><i class="fas fa-map-marker-alt"></i> Location</p>
-                </div>
-                
-                <div class="stage-specs">
-                    <div class="spec-item">
-                        <i class="fas fa-bed"></i>
-                        <span id="stage-beds" class="spec-value">0</span>
-                        <p class="spec-label">Beds</p>
-                    </div>
-                    <div class="spec-item">
-                        <i class="fas fa-bath"></i>
-                        <span id="stage-baths" class="spec-value">0</span>
-                        <p class="spec-label">Baths</p>
-                    </div>
-                    <div class="spec-item">
-                        <i class="fas fa-expand-arrows-alt"></i>
-                        <span id="stage-sqft" class="spec-value">0</span>
-                        <p class="spec-label">Sq Ft</p>
-                    </div>
-                </div>
-                
-                <div class="stage-description">
-                    <h3 class="stage-description-header">INTELLIGENCE BRIEFING</h3>
-                    <p id="stage-desc" class="stage-description-body"></p>
-                </div>
-                
-                <div class="stage-amenities">
-                    <h3 class="stage-description-header">NEURAL AMENITIES</h3>
-                    <div id="stage-amenities-list" class="amenities-grid"></div>
-                </div>
-            </div>
-            
-            <div class="stage-footer">
-                <div class="footer-verified">
-                    <i class="fas fa-shield-alt text-accent"></i>
-                    <span>BOU VERIFIED ASSET</span>
+                <div class="stage-price-actions">
+                    <button class="btn-action" id="stage-contact-btn">
+                        <i class="fas fa-paper-plane"></i> Contact Agent
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <script type="module" src="index.js"></script>
+
+    <div class="stage-info">
+        <div class="detail-scroll">
+            <div class="stage-info-header">
+                <span id="stage-category" class="text-accent text-label">CATEGORY</span>
+                <h1 id="stage-title">Property Title</h1>
+                <p id="stage-location" class="text-muted"><i class="fas fa-map-marker-alt"></i> Location</p>
+            </div>
+
+            <div class="stage-specs">
+                <div class="spec-item">
+                    <i class="fas fa-bed"></i>
+                    <span id="stage-beds" class="spec-value">0</span>
+                    <p class="spec-label">Beds</p>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-bath"></i>
+                    <span id="stage-baths" class="spec-value">0</span>
+                    <p class="spec-label">Baths</p>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                    <span id="stage-sqft" class="spec-value">0</span>
+                    <p class="spec-label">Sq Ft</p>
+                </div>
+            </div>
+
+            <div class="stage-description">
+                <h3 class="stage-description-header">INTELLIGENCE BRIEFING</h3>
+                <p id="stage-desc" class="stage-description-body"></p>
+            </div>
+
+            <div class="stage-amenities">
+                <h3 class="stage-description-header">NEURAL AMENITIES</h3>
+                <div id="stage-amenities-list" class="amenities-grid"></div>
+            </div>
+        </div>
+
+        <div class="stage-footer">
+            <div class="footer-verified">
+                <i class="fas fa-shield-alt text-accent"></i>
+                <span>BOU VERIFIED ASSET</span>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="module" src="index.js"></script>
 </div>
