@@ -598,8 +598,8 @@ function initNinjaIntegration(retries = 20) {
     }
     const config = {
         apiKey: NINJA_CONFIG.CLIENT_KEY,
-        targetElement: "#ninja-verify-container",
-        display: "button",
+        targetElement: "#ninja-container",
+        display: "form",
         buttonLabel: "Verify Identity",
         idType: "nin",
         mode: "lookup",
