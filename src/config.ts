@@ -1,4 +1,5 @@
 export const NINJA_CONFIG = {
-    API_URL: "https://api.ninja.boucloud.io",
-    CLIENT_KEY: "pk_2dc905ad-0931-4d28-9b38-89711a53be50"
+    API_URL: "http://localhost:8082",
+    CLIENT_KEY: "pk_fa9f85d0-325b-4dfa-9c0e-39f7b83f1104",
+    CLIENT_SECRET: "sk_e2473e41-8a35-4137-923b-034a73e8b6d7"
 };
