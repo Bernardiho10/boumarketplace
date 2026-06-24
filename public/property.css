@@ -1,0 +1,540 @@
+/* ========================
+   PROPERTY DETAIL — SPLIT LAYOUT
+   70% Image | 30% Content
+======================== */
+
+/* Loading State */
+.prop-loading {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 499;
+    background: var(--black);
+}
+
+.prop-loading-spinner {
+    width: 44px;
+    height: 44px;
+    border: 2px solid rgba(0, 255, 136, 0.12);
+    border-top-color: var(--emerald);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Full-Screen Split Container */
+.prop-layout {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    z-index: 500;
+    background: var(--black);
+    animation: fadeIn 0.45s var(--ease-out);
+}
+
+/* ========================
+   80% — IMAGE PANEL
+======================== */
+.prop-media-panel {
+    width: 80%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background: #000;
+    flex-shrink: 0;
+}
+
+.prop-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+    animation: propSlowDrift 24s ease-in-out infinite alternate;
+}
+
+@keyframes propSlowDrift {
+    from { transform: scale(1) translate3d(0, 0, 0); }
+    to { transform: scale(1.08) translate3d(-1.5%, -1%, 0); }
+}
+
+/* Back Button */
+.prop-back-btn {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.3rem;
+    border-radius: 10px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    transition: var(--transition);
+    font-family: var(--font-body);
+}
+
+.prop-back-btn:hover {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: var(--emerald);
+    color: var(--emerald);
+    transform: translateX(-3px);
+}
+
+/* Thumbnail Strip */
+.prop-thumb-bar {
+    position: absolute;
+    bottom: 140px;
+    left: 0;
+    width: 100%;
+    padding: 0 2rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.prop-thumb-track {
+    display: flex;
+    gap: 0.65rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    pointer-events: all;
+    padding-bottom: 4px;
+}
+
+.prop-thumb-track::-webkit-scrollbar { display: none; }
+
+.prop-thumb {
+    width: 78px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    transition: var(--transition);
+    flex-shrink: 0;
+    opacity: 0.65;
+}
+
+.prop-thumb:hover {
+    opacity: 1;
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+}
+
+.prop-thumb.active {
+    border-color: var(--emerald);
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.35);
+}
+
+/* Price Overlay at Bottom of Image */
+.prop-price-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 2.5rem 2rem 2rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.97) 0%, rgba(0, 0, 0, 0.5) 55%, transparent 100%);
+    z-index: 15;
+}
+
+.prop-price-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 16px;
+    padding: 1.35rem 2rem;
+}
+
+.prop-price-label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(255, 255, 255, 0.3);
+    display: block;
+    margin-bottom: 0.3rem;
+    font-family: var(--font-body);
+}
+
+.prop-price-value {
+    font-size: 2rem;
+    color: var(--emerald);
+    font-family: var(--font-heading);
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.prop-price-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.prop-price-actions .btn-action {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    white-space: nowrap;
+}
+
+/* ========================
+   20% — CONTENT PANEL
+======================== */
+.prop-content-panel {
+    width: 20%;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--zinc-900);
+    border-left: 1px solid rgba(255, 255, 255, 0.055);
+    display: flex;
+    flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 255, 136, 0.15) transparent;
+}
+
+.prop-content-panel::-webkit-scrollbar { width: 3px; }
+.prop-content-panel::-webkit-scrollbar-track { background: transparent; }
+.prop-content-panel::-webkit-scrollbar-thumb { background: rgba(0, 255, 136, 0.2); border-radius: 10px; }
+
+.prop-content-inner {
+    padding: 3rem 2.25rem 2rem;
+    flex-grow: 1;
+}
+
+/* Meta Row: badges */
+.prop-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.prop-badge {
+    padding: 0.35rem 0.9rem;
+    border-radius: 99px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    background: var(--emerald);
+    color: var(--black);
+    font-family: var(--font-body);
+}
+
+.prop-status-tag {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: rgba(255, 255, 255, 0.35);
+    font-family: var(--font-body);
+}
+
+/* Title & Location */
+.prop-title {
+    font-size: 1.65rem;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--white);
+}
+
+.prop-location {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.prop-location i {
+    color: var(--emerald);
+    font-size: 0.8rem;
+}
+
+/* Specs Row */
+.prop-specs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 1.35rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 2.25rem;
+}
+
+.prop-spec {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    text-align: center;
+}
+
+.prop-spec i {
+    font-size: 0.8rem;
+    color: var(--emerald);
+    opacity: 0.55;
+}
+
+.prop-spec strong {
+    font-size: 1.55rem;
+    font-weight: 800;
+    font-family: var(--font-heading);
+    color: var(--white);
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.prop-spec span {
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    color: rgba(255, 255, 255, 0.25);
+    font-weight: 700;
+    font-family: var(--font-body);
+}
+
+.prop-spec-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+
+/* Content Sections */
+.prop-section {
+    margin-bottom: 2.25rem;
+}
+
+.prop-section-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: rgba(255, 255, 255, 0.25);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.prop-section-label i {
+    color: var(--emerald);
+    opacity: 0.5;
+    font-size: 0.65rem;
+}
+
+.prop-desc {
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 1.25rem;
+}
+
+/* Ghost narration word highlighting */
+.prop-desc span {
+    transition: all 0.25s ease;
+    display: inline;
+}
+
+.prop-desc span.active {
+    color: var(--white);
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+}
+
+/* Audio Button */
+.prop-audio-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.85rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+}
+
+.prop-audio-btn:hover {
+    border-color: rgba(0, 255, 136, 0.35);
+    color: var(--emerald);
+    background: rgba(0, 255, 136, 0.04);
+}
+
+.prop-audio-btn.playing {
+    border-color: var(--emerald);
+    color: var(--emerald);
+    background: rgba(0, 255, 136, 0.06);
+}
+
+/* Amenity Tags */
+.prop-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.amenity-tag {
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.4rem 0.85rem;
+    background: rgba(0, 255, 136, 0.05);
+    border: 1px solid rgba(0, 255, 136, 0.15);
+    border-radius: 8px;
+    color: var(--emerald);
+    font-family: var(--font-body);
+    transition: var(--transition);
+}
+
+.amenity-tag:hover {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: var(--emerald);
+}
+
+/* Explore Button */
+.prop-explore-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.3);
+    text-decoration: none;
+    transition: var(--transition);
+    padding: 0.6rem 0;
+    font-family: var(--font-body);
+}
+
+.prop-explore-btn:hover {
+    color: var(--emerald);
+    gap: 0.9rem;
+}
+
+/* Panel Footer */
+.prop-panel-footer {
+    padding: 1.5rem 2.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.045);
+    font-size: 0.58rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(255, 255, 255, 0.15);
+    font-weight: 700;
+    font-family: var(--font-body);
+    flex-shrink: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prop-footer-signal {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.prop-footer-signal i {
+    font-size: 0.4rem;
+    animation: pulse 2s infinite;
+}
+
+/* ========================
+   RESPONSIVE — Mobile
+======================== */
+@media (max-width: 991px) {
+    .prop-layout {
+        flex-direction: column;
+        position: relative;
+        height: auto;
+        overflow: visible;
+    }
+
+    .prop-media-panel {
+        width: 100%;
+        height: 60vh;
+        flex-shrink: 0;
+    }
+
+    .prop-thumb-bar {
+        bottom: 120px;
+    }
+
+    .prop-content-panel {
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .prop-content-inner {
+        padding: 2rem 1.5rem;
+    }
+
+    .prop-panel-footer {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .prop-loading {
+        position: relative;
+        height: 100vh;
+    }
+}
+
+@media (max-width: 768px) {
+    .prop-title {
+        font-size: 1.35rem;
+    }
+
+    .prop-price-value {
+        font-size: 1.5rem;
+    }
+
+    .prop-price-inner {
+        flex-direction: column;
+        gap: 1.25rem;
+        align-items: flex-start;
+    }
+
+    .prop-price-actions .btn-action {
+        width: 100%;
+        justify-content: center;
+    }
+}
