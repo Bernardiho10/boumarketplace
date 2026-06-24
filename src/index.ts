@@ -719,10 +719,6 @@ class NeuralMarketView extends MagicView {
 //     }
 // }
 
-// Example using fetch (Node.js / server-side)
-
-
-
 
 // Function to handle KYC confirmation (to be implemented based on your backend needs)
 // window.confirmKycVerification = function(data: any) {
@@ -741,8 +737,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await view.viewModel.resolveNode();
 
     view.render();
-    // Initialize Ninja
-    initNinjaIntegration();
 
     const intelNode = document.getElementById("intel-node");
     if (intelNode) {
