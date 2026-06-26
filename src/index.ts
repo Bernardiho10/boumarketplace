@@ -490,19 +490,22 @@ class NeuralMarketView extends MagicView {
             return;
         }
 
-        container.innerHTML = filtered.map(p => `
-            <div class="inline-result-card" onclick="window.marketplaceView.enterStage(${p.id})" title="${p.title}" role="button" tabindex="0" aria-label="Preview ${p.title}">
-                <div class="inline-result-img-wrap">
-                    <img src="${p.image || FALLBACK_PROPERTY_IMAGE}" class="inline-result-img" alt="${p.title}" loading="lazy" onerror="this.src='${FALLBACK_PROPERTY_IMAGE}'">
-                    <span class="inline-source-badge">${p.status}</span>
+        container.innerHTML = filtered.map(p => {
+            const badgeLabel = p.sourceSite ? `${p.sourceSite} · ${p.status}` : p.status;
+            return `
+                <div class="inline-result-card" onclick="window.marketplaceView.enterStage(${p.id})" title="${p.title}" role="button" tabindex="0" aria-label="Preview ${p.title}">
+                    <div class="inline-result-img-wrap">
+                        <img src="${p.image || FALLBACK_PROPERTY_IMAGE}" class="inline-result-img" alt="${p.title}" loading="lazy" onerror="this.src='${FALLBACK_PROPERTY_IMAGE}'">
+                        <span class="inline-source-badge">${badgeLabel}</span>
+                    </div>
+                    <div class="inline-result-info">
+                        <span class="inline-result-price">₦${p.price.split(' ')[0]}</span>
+                        <strong class="inline-result-title">${p.title}</strong>
+                        <span class="inline-result-location">${p.location}</span>
+                    </div>
                 </div>
-                <div class="inline-result-info">
-                    <span class="inline-result-price">₦${p.price.split(' ')[0]}</span>
-                    <strong class="inline-result-title">${p.title}</strong>
-                    <span class="inline-result-location">${p.location}</span>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     // ─── Stage Logic ──────────────────────────────────────────────────────────
@@ -529,7 +532,19 @@ class NeuralMarketView extends MagicView {
         if (priceEl) priceEl.innerText = `₦${prop.price}`;
 
         const catEl = document.getElementById("stage-category");
-        if (catEl) catEl.innerText = prop.category.toUpperCase();
+        if (catEl) {
+            const sourceLabel = prop.sourceSite ? `[${prop.sourceSite}] ` : "";
+            catEl.innerText = `${sourceLabel}${prop.category.toUpperCase()}`;
+        }
+
+        const refEl = document.getElementById("stage-ref-id");
+        if (refEl) refEl.innerText = `REF: ${prop.refId || '—'}`;
+
+        const agentEl = document.getElementById("stage-agent");
+        if (agentEl) {
+            const verifiedBadge = prop.agentVerified ? ' <i class="fas fa-check-circle" style="color:#00e676; font-size:0.8rem;" title="Verified Agent"></i>' : '';
+            agentEl.innerHTML = prop.agentName ? `Marketed by: ${prop.agentName}${verifiedBadge}` : '';
+        }
 
         const locEl = document.getElementById("stage-location");
         if (locEl) locEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${prop.location}`;
@@ -540,20 +555,64 @@ class NeuralMarketView extends MagicView {
         const bathsEl = document.getElementById("stage-baths");
         if (bathsEl) bathsEl.innerText = (prop.bathrooms || 0).toString();
 
+        const toiletsEl = document.getElementById("stage-toilets");
+        if (toiletsEl) toiletsEl.innerText = (prop.toilets || prop.bathrooms || 0).toString();
+
+        const parkingEl = document.getElementById("stage-parking");
+        if (parkingEl) parkingEl.innerText = (prop.parkingSpaces || 0).toString();
+
         const sqftEl = document.getElementById("stage-sqft");
         if (sqftEl) sqftEl.innerText = (prop.sqft || 0).toLocaleString();
 
         const descEl = document.getElementById("stage-desc");
         if (descEl) descEl.innerText = prop.description || "No intelligence brief available for this asset.";
 
+        // WhatsApp and Call Actions
+        const whatsappBtn = document.getElementById("stage-whatsapp-btn") as HTMLAnchorElement;
+        if (whatsappBtn) {
+            whatsappBtn.href = prop.agentWhatsApp || `https://wa.me/2348100000000?text=Hi,%20I'm%20interested%20in%20${encodeURIComponent(prop.title)}%20on%20BOU%20Marketplace`;
+        }
+        
+        const callBtn = document.getElementById("stage-call-btn") as HTMLAnchorElement;
+        if (callBtn) {
+            callBtn.href = prop.agentPhone || "tel:+2348100000000";
+        }
+
+        // Safety Alert Banner
+        const safetyBanner = document.getElementById("stage-safety-banner");
+        if (safetyBanner) {
+            if (prop.sourceSite === 'Jiji') {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(220, 53, 69, 0.15); border: 1px solid rgba(220, 53, 69, 0.3); border-left: 4px solid #dc3545; padding: 0.85rem; color: #ffccd0; border-radius: 4px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc3545; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>Jiji Safety Alert:</strong> Do not pay in advance under any circumstance. Meet the seller in a public place, conduct a physical inspection in daylight, and verify all title deeds/identities before committing.
+                    </div>
+                `;
+            } else if (prop.sourceSite === 'NPC') {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.2); border-left: 4px solid #00e676; padding: 0.85rem; color: #c8e6c9; border-radius: 4px;">
+                        <i class="fas fa-shield-alt" style="color: #00e676; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>NPC Verified Listing:</strong> Always inspect this property in daylight. Verify the agent's registration status and run a search at the state land registry before making payments.
+                    </div>
+                `;
+            } else {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.2); border-left: 4px solid #ffc107; padding: 0.85rem; color: #fff3cd; border-radius: 4px;">
+                        <i class="fas fa-info-circle" style="color: #ffc107; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>Property Advisory:</strong> Conduct physical inspections in daylight and verify all legal title documentation with an independent legal advisor before any financial commitment.
+                    </div>
+                `;
+            }
+        }
+
+        const sourceLabelEl = document.getElementById("stage-source-label");
+        if (sourceLabelEl) {
+            sourceLabelEl.innerText = prop.sourceSite ? `SOURCE: ${prop.sourceSite.toUpperCase()}` : "BOU VERIFIED ASSET";
+        }
+
         const amenitiesList = document.getElementById("stage-amenities-list");
         if (amenitiesList) {
             amenitiesList.innerHTML = (prop.amenities || []).map(a => `<span class="amenity-tag">${a}</span>`).join('');
-        }
-
-        const contactBtn = document.getElementById("stage-contact-btn") as HTMLAnchorElement;
-        if (contactBtn) {
-            contactBtn.onclick = () => window.open(prop.original_url || '#', '_blank');
         }
 
         // Show Stage
@@ -608,24 +667,33 @@ class NeuralMarketView extends MagicView {
             return;
         }
 
-        container.innerHTML = items.map((p, i) => `
-            <a href="property.html?id=${p.id}" class="bento-card" style="transition-delay:${i * 0.04}s;">
-                <div style="position:relative;overflow:hidden;">
-                    <img src="${p.image}" class="bento-img" alt="${p.title}" loading="lazy">
-                    <div style="position:absolute;bottom:0;left:0;padding:0.75rem 1rem;width:100%;background:linear-gradient(transparent,rgba(0,0,0,0.8))">
-                        <span class="text-accent" style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">${p.category} · BOU Verified</span>
+        container.innerHTML = items.map((p, i) => {
+            const specParts = [];
+            if (p.bedrooms > 0) specParts.push(`${p.bedrooms} Beds`);
+            if (p.bathrooms > 0) specParts.push(`${p.bathrooms} Baths`);
+            if (p.toilets > 0) specParts.push(`${p.toilets} Toilets`);
+            const specText = specParts.length > 0 ? ' · ' + specParts.join(' · ') : '';
+            const sourceBadge = p.sourceSite ? `${p.category} · ${p.sourceSite}` : `${p.category} · BOU Verified`;
+
+            return `
+                <a href="property.html?id=${p.id}" class="bento-card" style="transition-delay:${i * 0.04}s;">
+                    <div style="position:relative;overflow:hidden;">
+                        <img src="${p.image}" class="bento-img" alt="${p.title}" loading="lazy">
+                        <div style="position:absolute;bottom:0;left:0;padding:0.75rem 1rem;width:100%;background:linear-gradient(transparent,rgba(0,0,0,0.8))">
+                            <span class="text-accent" style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;">${sourceBadge}</span>
+                        </div>
                     </div>
-                </div>
-                <div style="padding:1.25rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
-                        <h4 style="margin:0;font-size:1rem;color:white;">${p.title}</h4>
-                        <span class="text-accent" style="font-size:0.8rem;font-weight:700;white-space:nowrap;margin-left:1rem;">₦${p.price.split(' ')[0]}</span>
+                    <div style="padding:1.25rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
+                            <h4 style="margin:0;font-size:1rem;color:white;">${p.title}</h4>
+                            <span class="text-accent" style="font-size:0.8rem;font-weight:700;white-space:nowrap;margin-left:1rem;">₦${p.price.split(' ')[0]}</span>
+                        </div>
+                        <p class="text-label" style="margin-bottom:0.75rem; font-size: 0.75rem;">${p.location}${specText}</p>
+                        <p class="text-muted" style="font-size:0.85rem;margin:0;">${p.description.substring(0, 80)}...</p>
                     </div>
-                    <p class="text-label" style="margin-bottom:0.75rem;">${p.location}${p.bedrooms > 0 ? ' · ' + p.bedrooms + ' Beds' : ''}</p>
-                    <p class="text-muted" style="font-size:0.85rem;margin:0;">${p.description.substring(0, 80)}...</p>
-                </div>
-            </a>
-        `).join('');
+                </a>
+            `;
+        }).join('');
     }
 
     // ─── Featured Grid ────────────────────────────────────────────────────────

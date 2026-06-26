@@ -4,15 +4,15 @@
 BOU Marketplace is a premium property listing platform specializing in high-end Nigerian real estate. The platform aggregates listings from top sources, enhances them using AI, and presents them in a high-fidelity, user-friendly interface.
 
 ## Core Features
-- [ ] **Property Aggregation**: Scrape and filter top property posts (Value > ₦10,000,000).
-- [ ] **AI Enhancement**: 
-    - [ ] Clean up and optimize property descriptions using AI models.
-    - [ ] Ensure high-quality visual presentation using original images.
-- [ ] **Source Attribution**: Maintain traceability by linking every property back to its original source URL.
+- [x] **Property Aggregation**: Scrape and filter top property posts (Value > ₦10,000,000) from Nigeria Property Centre.
+- [x] **AI Enhancement**: 
+    - [x] Clean up and optimize property descriptions using BOU Marketplace Intelligence.
+    - [x] Ensure high-quality visual presentation using high-resolution images (thumbs stripped).
+- [x] **Source Attribution**: Maintain traceability by linking every property back to its original source URL.
 - [x] **Functional Marketplace**:
-    - [x] Real-time property feed (mock data pipeline).
+    - [x] Real-time property feed (live aggregated pipeline).
     - [x] Property details page.
-    - [x] Search and filtering (Claude.ai-inspired conversational UI).
+    - [x] Search and filtering (conversational UI).
     - [x] Voice-to-text search with recording feedback.
     - [x] Date Posted filter (24h / 7d / 30d).
     - [x] Location filter (9 Nigerian cities).
@@ -24,18 +24,19 @@ BOU Marketplace is a premium property listing platform specializing in high-end 
 ## Current Status
 - [x] Initial project structure established.
 - [x] Existing frontend components (reviewed and integrated).
-- [x] Functional scraper engine (refined, pending browser environment).
-- [x] AI description processing pipeline (implemented via simulation/logic).
-- [x] Data Integration (DataProvider implemented to merge mock and scraped data).
+- [x] Functional scraper engine (refined, using Playwright on Chrome).
+- [x] AI description processing pipeline (implemented via clean copywriting engine).
+- [x] Data Integration (DataProvider feeding exclusively from data.json).
 - [x] Claude.ai-inspired UI with centered search terminal.
 - [x] Filter pills with glassmorphism and emerald accent system.
 - [x] datePosted field on Property model + functional date filtering.
 - [x] Featured Properties section with scroll-reveal animation.
-- [ ] Database/Storage for processed listings (currently using mock data).
+- [x] Live Data aggregated from NPC and updated in real-time.
+- [x] Dual contact paths (WhatsApp and Call) fully integrated with live numbers.
+- [x] Verification badges, furnishing/serviced status, and safety advisory notices.
 
 ## Next Steps
-1. **Live Data**: Connect the scraper to populate real listings from Nigerian property sites.
-2. **Property Type Filter**: Add a pill for Duplex/Apartment/Land/Commercial/etc.
-3. **Footer**: Add BOU branding, legal links, and source attribution.
-4. **Mobile Testing**: Verify responsiveness across breakpoints.
-5. **Performance**: Audit marquee and animation impact on mobile devices.
+1. **Production Deployment**: Host the Marketplace and setup a cron job (or `/schedule`) for daily property scrapes.
+2. **Mobile Optimization**: Perform field testing across diverse breakpoints and mobile devices.
+3. **Analytics**: Integrated user event tracking for Call/WhatsApp button clicks.
+

@@ -15,6 +15,16 @@ export interface Property {
     amenities: string[];
     gallery: string[];
     datePosted: string; // ISO date string e.g. "2026-04-28"
+    toilets?: number;
+    parkingSpaces?: number;
+    furnishing?: string;
+    serviced?: boolean;
+    refId?: string;
+    agentName?: string;
+    agentWhatsApp?: string;
+    agentPhone?: string;
+    agentVerified?: boolean;
+    sourceSite?: 'Jiji' | 'NPC';
 }
 
 export const MOCK_PROPERTIES: Property[] = [

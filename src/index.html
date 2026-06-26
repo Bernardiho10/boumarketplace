@@ -260,13 +260,16 @@
         <div class="stage-price-bar">
             <div class="stage-price-inner">
                 <div class="stage-price-amount">
-                    <span class="text-label">NEURAL ESTIMATE</span>
+                    <span class="text-label" id="stage-price-label">VERIFIED VALUE</span>
                     <h2 id="stage-price">₦0</h2>
                 </div>
-                <div class="stage-price-actions">
-                    <button class="btn-action" id="stage-contact-btn">
-                        <i class="fas fa-paper-plane"></i> Contact Agent
-                    </button>
+                <div class="stage-price-actions" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <a class="btn-action btn-whatsapp" id="stage-whatsapp-btn" href="#" target="_blank" style="background-color: #25d366; color: white;">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                    <a class="btn-action btn-call" id="stage-call-btn" href="#" style="background-color: #007bff; color: white;">
+                        <i class="fas fa-phone"></i> Call Agent
+                    </a>
                 </div>
             </div>
         </div>
@@ -275,9 +278,13 @@
     <div class="stage-info">
         <div class="detail-scroll">
             <div class="stage-info-header">
-                <span id="stage-category" class="text-accent text-label">CATEGORY</span>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span id="stage-category" class="text-accent text-label">CATEGORY</span>
+                    <span id="stage-ref-id" class="text-label" style="opacity: 0.6; font-size: 0.7rem;">REF: —</span>
+                </div>
                 <h1 id="stage-title">Property Title</h1>
                 <p id="stage-location" class="text-muted"><i class="fas fa-map-marker-alt"></i> Location</p>
+                <p id="stage-agent" class="text-accent" style="font-size: 0.8rem; font-weight: 700; margin: 0.25rem 0 0 0;"></p>
             </div>
 
             <div class="stage-specs">
@@ -292,6 +299,16 @@
                     <p class="spec-label">Baths</p>
                 </div>
                 <div class="spec-item">
+                    <i class="fas fa-tint"></i>
+                    <span id="stage-toilets" class="spec-value">0</span>
+                    <p class="spec-label">Toilets</p>
+                </div>
+                <div class="spec-item">
+                    <i class="fas fa-car"></i>
+                    <span id="stage-parking" class="spec-value">0</span>
+                    <p class="spec-label">Parking</p>
+                </div>
+                <div class="spec-item">
                     <i class="fas fa-expand-arrows-alt"></i>
                     <span id="stage-sqft" class="spec-value">0</span>
                     <p class="spec-label">Sq Ft</p>
@@ -303,6 +320,9 @@
                 <p id="stage-desc" class="stage-description-body"></p>
             </div>
 
+            <!-- Safety Alert Banner inside Stage -->
+            <div id="stage-safety-banner" class="stage-safety-banner" style="margin: 1.5rem 0; padding: 1rem; border-radius: 6px; font-size: 0.8rem; line-height: 1.4;"></div>
+
             <div class="stage-amenities">
                 <h3 class="stage-description-header">NEURAL AMENITIES</h3>
                 <div id="stage-amenities-list" class="amenities-grid"></div>
@@ -312,7 +332,7 @@
         <div class="stage-footer">
             <div class="footer-verified">
                 <i class="fas fa-shield-alt text-accent"></i>
-                <span>BOU VERIFIED ASSET</span>
+                <span id="stage-source-label">BOU VERIFIED ASSET</span>
             </div>
         </div>
     </div>

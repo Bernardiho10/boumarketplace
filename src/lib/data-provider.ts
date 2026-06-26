@@ -17,15 +17,17 @@ export class DataProvider {
     async init() {
         if (this.initialized) return;
 
-        this.properties = [...MOCK_PROPERTIES];
-
         try {
             const response = await fetch('./data.json');
             if (response.ok) {
                 const scrapedData = await response.json();
                 if (Array.isArray(scrapedData) && scrapedData.length > 0) {
-                    this.properties = [...scrapedData, ...this.properties];
+                    this.properties = scrapedData;
+                } else {
+                    this.properties = [...MOCK_PROPERTIES];
                 }
+            } else {
+                this.properties = [...MOCK_PROPERTIES];
             }
         } catch {
             this.properties = [...MOCK_PROPERTIES];

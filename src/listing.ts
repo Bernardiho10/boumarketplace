@@ -136,10 +136,19 @@ class ListingPage {
     }
 
     private renderCard(property: Property) {
-        const source = this.getSourceLabel(property.original_url);
-        const specText = property.bedrooms > 0
-            ? `${property.bedrooms} beds · ${property.bathrooms} baths · ${property.sqft.toLocaleString()} sqft`
-            : `${property.sqft.toLocaleString()} sqft · ${property.category}`;
+        const source = property.sourceSite || this.getSourceLabel(property.original_url);
+        
+        // Build specs text including toilets and parking spaces
+        const specs: string[] = [];
+        if (property.bedrooms > 0) specs.push(`${property.bedrooms} beds`);
+        if (property.bathrooms > 0) specs.push(`${property.bathrooms} baths`);
+        if (property.toilets !== undefined) specs.push(`${property.toilets} toilets`);
+        if (property.parkingSpaces !== undefined) specs.push(`${property.parkingSpaces} parking`);
+        if (property.sqft > 0) specs.push(`${property.sqft.toLocaleString()} sqft`);
+        
+        const specText = specs.length > 0 ? specs.join(" · ") : `${property.category}`;
+        const verifiedBadge = property.agentVerified ? ' <i class="fas fa-check-circle" style="color:#00e676; font-size: 0.7rem;" title="Verified Agent"></i>' : '';
+        const agentHtml = property.agentName ? `<p class="listing-card-agent" style="font-size: 0.75rem; color:#00e676; margin: 0.25rem 0 0.5rem 0; font-weight: 600;">Marketed by: ${property.agentName}${verifiedBadge}</p>` : '';
 
         return `
             <article class="listing-card">
@@ -149,14 +158,19 @@ class ListingPage {
                     <span class="listing-card-source">${source}</span>
                 </a>
                 <div class="listing-card-body">
-                    <div class="listing-card-price">₦${property.price}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                        <span class="listing-card-price">₦${property.price}</span>
+                        <span style="font-size: 0.65rem; opacity: 0.5; font-family: monospace;">REF: ${property.refId || '—'}</span>
+                    </div>
                     <h2>${property.title}</h2>
                     <p class="listing-card-location"><i class="fas fa-map-marker-alt"></i> ${property.location}</p>
+                    ${agentHtml}
                     <p class="listing-card-specs">${specText}</p>
                     <p class="listing-card-desc">${property.description}</p>
-                    <div class="listing-card-actions">
-                        <a href="property.html?id=${property.id}" class="listing-view-btn">View property</a>
-                        <a href="${property.original_url}" target="_blank" rel="noopener noreferrer" class="listing-source-link">Source</a>
+                    <div class="listing-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                        <a href="property.html?id=${property.id}" class="listing-view-btn" style="flex: 1; text-align: center;">View details</a>
+                        <a href="${property.agentWhatsApp || '#'}" target="_blank" class="listing-whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat</a>
+                        <a href="${property.agentPhone || '#'}" class="listing-call-btn"><i class="fas fa-phone"></i> Call</a>
                     </div>
                 </div>
             </article>

@@ -45,9 +45,12 @@
                         <span class="prop-price-label">Verified Market Value</span>
                         <h2 id="prop-price" class="prop-price-value">₦ —</h2>
                     </div>
-                    <div class="prop-price-actions">
-                        <a id="btn-contact-agent" href="#" target="_blank" class="btn-action">
-                            <i class="fas fa-bolt"></i> Initiate Contact
+                    <div class="prop-price-actions" style="display: flex; gap: 0.5rem; width: 100%;">
+                        <a id="btn-whatsapp-agent" href="#" target="_blank" class="btn-action" style="background-color: #25d366; border-color: #25d366; flex: 1; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                        <a id="btn-call-agent" href="#" class="btn-action" style="background-color: #007bff; border-color: #007bff; flex: 1; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                            <i class="fas fa-phone"></i> Call Agent
                         </a>
                     </div>
                 </div>
@@ -62,10 +65,14 @@
             <!-- Scrollable Inner Content -->
             <div class="prop-content-inner">
 
-                <!-- Category & Status Badges -->
-                <div class="prop-meta-row">
+                 <!-- Category & Status Badges -->
+                <div class="prop-meta-row" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem;">
                     <span id="prop-category" class="prop-badge">Category</span>
+                    <span id="prop-source" class="prop-badge" style="background: #00e676; color: black; font-weight: bold;">Source</span>
                     <span id="prop-status" class="prop-status-tag">Status</span>
+                    <span id="prop-furnishing" class="prop-badge" style="background: rgba(255,255,255,0.08); color: #ccc; display: none;">Furnishing</span>
+                    <span id="prop-serviced" class="prop-badge" style="background: rgba(0, 230, 118, 0.15); color: #00e676; display: none;">Serviced</span>
+                    <span id="prop-ref-id" style="font-size: 0.7rem; opacity: 0.6; margin-left: auto; font-family: monospace;">REF: —</span>
                 </div>
 
                 <!-- Title -->
@@ -77,23 +84,51 @@
                 </p>
 
                 <!-- Key Specifications -->
-                <div class="prop-specs">
-                    <div class="prop-spec">
+                <div class="prop-specs" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.25rem; text-align: center;">
+                    <div class="prop-spec" style="padding: 0.5rem 0.25rem;">
                         <i class="fas fa-bed"></i>
                         <strong id="spec-beds">—</strong>
-                        <span>Beds</span>
+                        <span style="font-size: 0.65rem;">Beds</span>
                     </div>
-                    <div class="prop-spec-divider"></div>
-                    <div class="prop-spec">
+                    <div class="prop-spec" style="padding: 0.5rem 0.25rem;">
                         <i class="fas fa-bath"></i>
                         <strong id="spec-baths">—</strong>
-                        <span>Baths</span>
+                        <span style="font-size: 0.65rem;">Baths</span>
                     </div>
-                    <div class="prop-spec-divider"></div>
-                    <div class="prop-spec">
+                    <div class="prop-spec" style="padding: 0.5rem 0.25rem;">
+                        <i class="fas fa-tint"></i>
+                        <strong id="spec-toilets">—</strong>
+                        <span style="font-size: 0.65rem;">Toilets</span>
+                    </div>
+                    <div class="prop-spec" style="padding: 0.5rem 0.25rem;">
+                        <i class="fas fa-car"></i>
+                        <strong id="spec-parking">—</strong>
+                        <span style="font-size: 0.65rem;">Parking</span>
+                    </div>
+                    <div class="prop-spec" style="padding: 0.5rem 0.25rem;">
                         <i class="fas fa-ruler-combined"></i>
                         <strong id="spec-sqft">—</strong>
-                        <span>Sq Ft</span>
+                        <span style="font-size: 0.65rem;">Sq Ft</span>
+                    </div>
+                </div>
+
+                <!-- Safety Warning Banner -->
+                <div id="prop-safety-banner" class="prop-safety-banner" style="margin-top: 1.5rem; font-size: 0.8rem; line-height: 1.4; border-radius: 6px;"></div>
+
+                <!-- Agent Contact Section -->
+                <div class="prop-section" id="agent-section" style="margin-top: 1.5rem;">
+                    <div class="prop-section-label">
+                        <i class="fas fa-user-tie"></i>
+                        MARKETING AGENT
+                    </div>
+                    <div class="agent-card-box" style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 0.75rem;">
+                        <div style="background: rgba(255,255,255,0.05); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; color: #00e676;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <h4 id="agent-name" style="margin: 0; font-size: 0.85rem; color: white; font-weight: 600;">Agent Name</h4>
+                            <p id="agent-status" style="margin: 0; font-size: 0.7rem; color: #888;"></p>
+                        </div>
                     </div>
                 </div>
 

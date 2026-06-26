@@ -84,7 +84,29 @@ class PropertyDetailView extends MagicView {
 
         // Badges and status
         this.setText("prop-category", prop.category);
+        this.setText("prop-source", prop.sourceSite || "BOU Verified");
         this.setText("prop-status", prop.status);
+        this.setText("prop-ref-id", `REF: ${prop.refId || '—'}`);
+
+        // Furnishing & Serviced badges
+        const furnishingEl = document.getElementById("prop-furnishing");
+        if (furnishingEl) {
+            if (prop.furnishing) {
+                furnishingEl.textContent = prop.furnishing;
+                furnishingEl.style.display = "inline-block";
+            } else {
+                furnishingEl.style.display = "none";
+            }
+        }
+
+        const servicedEl = document.getElementById("prop-serviced");
+        if (servicedEl) {
+            if (prop.serviced) {
+                servicedEl.style.display = "inline-block";
+            } else {
+                servicedEl.style.display = "none";
+            }
+        }
 
         // Title
         this.setText("prop-title", prop.title);
@@ -98,7 +120,43 @@ class PropertyDetailView extends MagicView {
         // Specs — show N/A for land/commercial
         this.setText("spec-beds", prop.bedrooms > 0 ? prop.bedrooms.toString() : "—");
         this.setText("spec-baths", prop.bathrooms > 0 ? prop.bathrooms.toString() : "—");
+        this.setText("spec-toilets", prop.toilets !== undefined ? prop.toilets.toString() : (prop.bathrooms > 0 ? prop.bathrooms.toString() : "—"));
+        this.setText("spec-parking", prop.parkingSpaces !== undefined ? prop.parkingSpaces.toString() : "—");
         this.setText("spec-sqft", prop.sqft > 0 ? prop.sqft.toLocaleString() : "—");
+
+        // Safety Alert Banner
+        const safetyBanner = document.getElementById("prop-safety-banner");
+        if (safetyBanner) {
+            if (prop.sourceSite === 'Jiji') {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(220, 53, 69, 0.15); border: 1px solid rgba(220, 53, 69, 0.3); border-left: 4px solid #dc3545; padding: 0.85rem; color: #ffccd0; border-radius: 4px;">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc3545; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>Jiji Safety Advisory:</strong> Do not pay in advance. Always inspect the property physically in daylight, verify the seller's true identity, and check all original title deeds before any financial commitment.
+                    </div>
+                `;
+            } else if (prop.sourceSite === 'NPC') {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.2); border-left: 4px solid #00e676; padding: 0.85rem; color: #c8e6c9; border-radius: 4px;">
+                        <i class="fas fa-shield-alt" style="color: #00e676; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>NPC Verified Listing:</strong> Please inspect the property physically in person. Ensure you verify the agent's mandate and conduct a search at the state land registry before making payments.
+                    </div>
+                `;
+            } else {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.2); border-left: 4px solid #ffc107; padding: 0.85rem; color: #fff3cd; border-radius: 4px;">
+                        <i class="fas fa-info-circle" style="color: #ffc107; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>Property Advisory:</strong> Conduct physical inspections in daylight and verify all legal title documentation with an independent legal advisor before making payments.
+                    </div>
+                `;
+            }
+        }
+
+        // Agent Card Info
+        this.setText("agent-name", prop.agentName || "BOU Verified Agent");
+        const agentStatusText = prop.agentVerified 
+            ? '<i class="fas fa-check-circle" style="color: #00e676;"></i> Verified Partner' 
+            : 'Standard Partner';
+        this.setText("agent-status", agentStatusText);
 
         // Hide beds/baths for land-type properties
         const specsSection = document.querySelector(".prop-specs");
@@ -148,9 +206,11 @@ class PropertyDetailView extends MagicView {
         const descContainer = document.getElementById("narration-stream");
         if (descContainer) descContainer.textContent = prop.description;
 
-        // Contact CTA
-        const btnContact = document.getElementById("btn-contact-agent") as HTMLAnchorElement;
-        if (btnContact) btnContact.href = prop.original_url;
+        // Contact CTA Links (WhatsApp & Call)
+        const btnWhatsapp = document.getElementById("btn-whatsapp-agent") as HTMLAnchorElement;
+        if (btnWhatsapp) btnWhatsapp.href = prop.agentWhatsApp || '#';
+        const btnCall = document.getElementById("btn-call-agent") as HTMLAnchorElement;
+        if (btnCall) btnCall.href = prop.agentPhone || 'tel:+2348100000000';
 
         // Audio button
         const btnAudio = document.getElementById("btn-read-aloud");
