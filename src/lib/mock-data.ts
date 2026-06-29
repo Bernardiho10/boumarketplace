@@ -47,7 +47,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-29"
+        datePosted: "2026-06-25"
     },
     {
         id: 2,
@@ -68,7 +68,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-28"
+        datePosted: "2026-06-22"
     },
     {
         id: 3,
@@ -89,7 +89,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1502672260266-1c1f52d36214?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-27"
+        datePosted: "2026-06-20"
     },
     {
         id: 4,
@@ -110,7 +110,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-25"
+        datePosted: "2026-06-18"
     },
     {
         id: 5,
@@ -131,7 +131,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-22"
+        datePosted: "2026-06-15"
     },
     {
         id: 6,
@@ -152,7 +152,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1536376073347-4573914a1fa4?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-20"
+        datePosted: "2026-06-12"
     },
     {
         id: 7,
@@ -173,7 +173,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-15"
+        datePosted: "2026-06-10"
     },
     {
         id: 8,
@@ -194,7 +194,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-10"
+        datePosted: "2026-06-08"
     },
     {
         id: 9,
@@ -215,7 +215,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-05"
+        datePosted: "2026-06-05"
     },
     {
         id: 10,
@@ -236,7 +236,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-04-01"
+        datePosted: "2026-06-02"
     },
     {
         id: 11,
@@ -257,7 +257,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-03-28"
+        datePosted: "2026-05-28"
     },
     {
         id: 12,
@@ -278,7 +278,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-03-20"
+        datePosted: "2026-05-25"
     },
     {
         id: 13,
@@ -298,7 +298,7 @@ export const MOCK_PROPERTIES: Property[] = [
         gallery: [
             "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-03-15"
+        datePosted: "2026-05-20"
     },
     {
         id: 14,
@@ -319,7 +319,7 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-03-10"
+        datePosted: "2026-05-15"
     },
     {
         id: 15,
@@ -340,6 +340,6 @@ export const MOCK_PROPERTIES: Property[] = [
             "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=800&h=600",
             "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&h=600"
         ],
-        datePosted: "2026-03-01"
+        datePosted: "2026-05-10"
     }
 ];

@@ -24,7 +24,7 @@
 
         <div class="listing-hero">
             <div>
-                <span class="text-label text-accent">BOU PROPERTY INDEX</span>
+                <span class="text-label text-accent">PROPERTY INDEX</span>
                 <h1>High-value Nigerian properties, filtered with intent.</h1>
                 <p>Search through live premium listings from Jiji and Nigeria Property Centre, enhanced with AI and direct contact options.</p>
             </div>
@@ -41,6 +41,10 @@
                 <button id="listing-voice-btn" class="listing-icon-btn" type="button" aria-label="Search listings by voice">
                     <i class="fas fa-microphone"></i>
                 </button>
+            </div>
+            <div id="listing-recent-searches-container" class="listing-recent-searches-container d-none mt-2">
+                <span class="text-label" style="font-size: 0.65rem; opacity: 0.5; margin-right: 0.5rem; text-transform: uppercase;">Recent Searches:</span>
+                <div id="listing-recent-searches-list" class="listing-recent-searches-list" style="display: inline-flex; gap: 0.5rem; flex-wrap: wrap;"></div>
             </div>
             <div id="listing-feedback" class="listing-feedback d-none"></div>
             <div class="listing-filter-grid">
@@ -86,12 +90,18 @@
             <button type="button" data-query="commercial property in Victoria Island">VI commercial property</button>
         </div>
 
-        <div class="listing-results-header">
-            <span id="listing-result-count" class="text-label text-accent">0 RESULTS</span>
-            <button id="listing-clear-btn" type="button">Clear filters</button>
+        <div class="listing-split-container">
+            <div class="listing-list-side">
+                <div class="listing-results-header">
+                    <span id="listing-result-count" class="text-label text-accent">0 RESULTS</span>
+                    <button id="listing-clear-btn" type="button">Clear filters</button>
+                </div>
+                <div id="listing-grid" class="listing-grid"></div>
+            </div>
+            <div class="listing-map-side" id="listing-map-side">
+                <div id="listings-map" style="height: 100%; min-height: 500px; width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 1;"></div>
+            </div>
         </div>
-
-        <div id="listing-grid" class="listing-grid"></div>
     </section>
 
     <script type="module" src="listing.js"></script>

@@ -355,18 +355,42 @@ class PropertyScraper {
                         const waLink = document.querySelector('a[href*="wa.me"], a[href*="whatsapp"]') as HTMLAnchorElement;
                         const telLink = document.querySelector('a[href^="tel:"]') as HTMLAnchorElement;
 
+                        // Try to scrape "Added on" or "date added"
+                        let datePostedStr = "";
+                        const pageText = document.body.innerText;
+                        const dateMatch = pageText.match(/added\s+on\s+(\d+\s+[a-z]+\s+\d{4})/i) ||
+                                          pageText.match(/added:\s*(\d+\s+[a-z]+\s+\d{4})/i) ||
+                                          pageText.match(/date\s+added:\s*(\d+\s+[a-z]+\s+\d{4})/i) ||
+                                          pageText.match(/added\s+(\d+\s+[a-z]+\s+\d{4})/i);
+                        if (dateMatch && dateMatch[1]) {
+                            datePostedStr = dateMatch[1];
+                        }
+
                         return {
                             description,
                             gallery: propertyImgs,
                             furnishing,
                             serviced,
                             agentWhatsApp: waLink?.href || '',
-                            agentPhone: telLink?.href || ''
+                            agentPhone: telLink?.href || '',
+                            datePosted: datePostedStr
                         };
                     });
 
                     // Remove thumbnails /thumbs/ directory in NPC urls for high res
                     const cleanGallery = details.gallery.map(url => url.replace('/thumbs/', '/'));
+
+                    let datePostedIso = "";
+                    if (details.datePosted) {
+                        try {
+                            const parsedDate = new Date(details.datePosted);
+                            if (!isNaN(parsedDate.getTime())) {
+                                datePostedIso = parsedDate.toISOString().split('T')[0];
+                            }
+                        } catch (err) {
+                            console.error("Failed to parse NPC date:", details.datePosted);
+                        }
+                    }
 
                     detailedListings.push({
                         ...item,
@@ -378,7 +402,8 @@ class PropertyScraper {
                         agentWhatsApp: details.agentWhatsApp || item.agentWhatsApp || '',
                         agentPhone: details.agentPhone || item.agentPhone || '',
                         sourceSite: 'NPC',
-                        status: "For Sale"
+                        status: "For Sale",
+                        datePosted: datePostedIso
                     });
                     
                     await detailPage.close();
@@ -433,7 +458,7 @@ class PropertyScraper {
             refined += "A premium real estate asset in a choice location, offering exceptional value and potential.";
         }
 
-        refined += "\n\nProfessionally curated by BOU Marketplace Intelligence.";
+        refined += "\n\nProfessionally curated by Marketplace Intelligence.";
         return refined;
     }
 
@@ -459,9 +484,19 @@ class PropertyScraper {
         const processedProperties: ScrapedProperty[] = [];
         let currentId = 1000;
         
+        const twoMonthsAgo = new Date();
+        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+
         for (const item of combined) {
             if (!item.title) continue;
             
+            const dateStr = item.datePosted || new Date().toISOString().split('T')[0];
+            const itemDate = new Date(dateStr);
+            if (itemDate < twoMonthsAgo) {
+                console.log(`Skipping property "${item.title}" because it was posted on ${dateStr} (older than 2 months).`);
+                continue;
+            }
+
             const refinedDescription = await this.refineDescription(item.title, item.description || "");
             
             // Format price string to clean format
@@ -485,12 +520,12 @@ class PropertyScraper {
                 sqft: Math.floor(Math.random() * 3000) + 1800, // Approximate area
                 amenities: ["AI Enhanced", "Premium Verified"],
                 gallery: item.gallery && item.gallery.length > 0 ? item.gallery : (item.image ? [item.image] : []),
-                datePosted: new Date().toISOString().split('T')[0],
+                datePosted: dateStr,
                 furnishing: item.furnishing || "Unfurnished",
                 serviced: item.serviced || false,
                 refId: item.refId || `REF-${Math.floor(Math.random() * 900000 + 100000)}`,
-                agentName: item.agentName || "BOU Verified Agent",
-                agentWhatsApp: item.agentWhatsApp || `https://wa.me/2348100000000?text=Hi,%20I'm%20interested%20in%20this%20property%20listed%20on%20BOU%20Marketplace:%20${encodeURIComponent(item.original_url || '')}`,
+                agentName: item.agentName || "Verified Agent",
+                agentWhatsApp: item.agentWhatsApp || `https://wa.me/2348100000000?text=Hi,%20I'm%20interested%20in%20this%20property%20listed%20on%20Marketplace:%20${encodeURIComponent(item.original_url || '')}`,
                 agentPhone: item.agentPhone || "tel:+2348100000000",
                 agentVerified: item.agentVerified !== undefined ? item.agentVerified : true,
                 sourceSite: item.sourceSite || 'NPC'

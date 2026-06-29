@@ -350,7 +350,7 @@ var Ninja = (function () {
                 </button>
             </div>
             <div id="ninja-result-container"></div>
-            <div class="ninja-footer-note">Powered by Ninja · BOU Group</div>
+            <div class="ninja-footer-note">Powered by Ninja</div>
         `;
         }
         attachFormEvents() {

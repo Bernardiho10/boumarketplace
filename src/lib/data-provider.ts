@@ -33,6 +33,15 @@ export class DataProvider {
             this.properties = [...MOCK_PROPERTIES];
         }
 
+        // Filter out properties older than 2 months
+        const twoMonthsAgo = new Date();
+        twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2);
+        this.properties = this.properties.filter(p => {
+            if (!p.datePosted) return false;
+            const d = new Date(p.datePosted);
+            return d >= twoMonthsAgo;
+        });
+
         this.initialized = true;
     }
 

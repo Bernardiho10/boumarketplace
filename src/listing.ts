@@ -1,27 +1,59 @@
 import { DataProvider } from "./lib/data-provider";
 import { MOCK_PROPERTIES, type Property } from "./lib/mock-data";
+import { getCoordinatesWithJitter } from "./property";
 
-type SpeechRecognitionResultLike = {
-    readonly 0?: { transcript: string };
-};
+declare let L: any;
 
-type SpeechRecognitionEventLike = {
-    results: ArrayLike<SpeechRecognitionResultLike>;
-};
+class PlaceholderRotator {
+    private element: HTMLInputElement;
+    private suggestions: string[];
+    private currentIndex = 0;
+    private intervalId: ReturnType<typeof setInterval> | null = null;
+    private isTyping = false;
 
-type SpeechRecognitionLike = {
-    lang: string;
-    interimResults: boolean;
-    continuous: boolean;
-    onstart: (() => void) | null;
-    onresult: ((event: SpeechRecognitionEventLike) => void) | null;
-    onend: (() => void) | null;
-    onerror: (() => void) | null;
-    start: () => void;
-    stop: () => void;
-};
+    constructor(element: HTMLInputElement, suggestions: string[]) {
+        this.element = element;
+        this.suggestions = suggestions;
+        this.start();
+        this.bindEvents();
+    }
 
-type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+    start() {
+        if (this.intervalId) clearInterval(this.intervalId);
+        this.element.placeholder = "e.g. " + this.suggestions[this.currentIndex];
+        this.intervalId = setInterval(() => {
+            if (!this.isTyping && document.activeElement !== this.element && !this.element.value) {
+                this.currentIndex = (this.currentIndex + 1) % this.suggestions.length;
+                this.element.placeholder = "e.g. " + this.suggestions[this.currentIndex];
+            }
+        }, 3500);
+    }
+
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+
+    private bindEvents() {
+        this.element.addEventListener("focus", () => {
+            this.isTyping = true;
+            this.element.placeholder = "";
+        });
+        this.element.addEventListener("blur", () => {
+            this.isTyping = false;
+            if (!this.element.value) {
+                this.start();
+            }
+        });
+        this.element.addEventListener("input", () => {
+            if (this.element.value) {
+                this.element.placeholder = "";
+            }
+        });
+    }
+}
 
 const FALLBACK_PROPERTY_IMAGE = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&h=900";
 
@@ -50,19 +82,60 @@ function isPropertySearchQuery(query: string): boolean {
 
 class ListingPage {
     private properties: Property[] = [];
-    private recognition: SpeechRecognitionLike | null = null;
+    private recognition: any = null;
+    private map: any = null;
+    private markerLayer: any = null;
+    private rotator: PlaceholderRotator | null = null;
 
     async init() {
         const dataProvider = DataProvider.getInstance();
         await dataProvider.init();
         const properties = dataProvider.getAllProperties();
         this.properties = properties.length > 0 ? properties : MOCK_PROPERTIES;
+        
+        this.initMap();
         this.bindControls();
+
+        const searchInput = this.getInput("listing-search-input");
+        if (searchInput) {
+            this.rotator = new PlaceholderRotator(searchInput, PROPERTY_SEARCH_EXAMPLES);
+        }
+        this.renderRecentSearches();
+
         this.render();
+    }
+
+    private initMap() {
+        const mapContainer = document.getElementById("listings-map");
+        if (mapContainer && typeof L !== 'undefined') {
+            try {
+                this.map = L.map("listings-map", {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView([6.4431, 3.4883], 12);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 20
+                }).addTo(this.map);
+
+                this.markerLayer = L.layerGroup().addTo(this.map);
+            } catch (err) {
+                console.error("Leaflet map initialization failed on listings page:", err);
+            }
+        }
     }
 
     private bindControls() {
         this.getInput("listing-search-input")?.addEventListener("input", () => this.render());
+        this.getInput("listing-search-input")?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const query = this.getInput("listing-search-input")?.value.trim() || "";
+                if (query.length >= 3) {
+                    this.saveRecentSearch(query);
+                }
+                this.render();
+            }
+        });
         this.getSelect("listing-location-filter")?.addEventListener("change", () => this.render());
         this.getSelect("listing-type-filter")?.addEventListener("change", () => this.render());
         this.getSelect("listing-price-filter")?.addEventListener("change", () => this.render());
@@ -74,6 +147,7 @@ class ListingPage {
                 const input = this.getInput("listing-search-input");
                 if (!input) return;
                 input.value = button.dataset.query || "";
+                this.saveRecentSearch(input.value);
                 this.render();
             });
         });
@@ -88,6 +162,9 @@ class ListingPage {
         if (total) total.textContent = this.properties.length.toString();
         if (count) count.textContent = `${filtered.length} RESULT${filtered.length === 1 ? "" : "S"}`;
         this.renderFeedback(filtered.length);
+
+        this.updateMapMarkers(filtered);
+
         if (!grid) return;
 
         if (filtered.length === 0) {
@@ -293,6 +370,107 @@ class ListingPage {
         if (url.includes("nigeriapropertycentre")) return "NPC";
         if (url.includes("propertypro")) return "PropertyPro";
         return "Verified source";
+    }
+
+    private updateMapMarkers(filtered: Property[]) {
+        if (!this.markerLayer || !this.map) return;
+        this.markerLayer.clearLayers();
+
+        if (filtered.length === 0) return;
+
+        const bounds: any[] = [];
+        filtered.forEach(property => {
+            const coords = getCoordinatesWithJitter(property.location, property.id);
+            bounds.push(coords);
+
+            const priceAbbr = property.price.split(' ')[0];
+            const customIcon = L.divIcon({
+                className: 'custom-price-marker',
+                html: `<div class="map-price-badge"><i class="fas fa-store map-marketplace-icon"></i> ₦${priceAbbr}</div>`,
+                iconSize: [80, 30],
+                iconAnchor: [40, 15]
+            });
+
+            const marker = L.marker(coords, { icon: customIcon });
+            const popupContent = `
+                <div class="map-popup-card">
+                    <img src="${property.image || FALLBACK_PROPERTY_IMAGE}" class="map-popup-img" alt="${property.title}" onerror="this.src='${FALLBACK_PROPERTY_IMAGE}'">
+                    <div class="map-popup-price">₦${property.price}</div>
+                    <h4 class="map-popup-title">${property.title}</h4>
+                    <a href="property.html?id=${property.id}" class="map-popup-link">View Details</a>
+                </div>
+            `;
+            marker.bindPopup(popupContent);
+            marker.addTo(this.markerLayer);
+        });
+
+        if (bounds.length > 0) {
+            try {
+                this.map.fitBounds(bounds, { padding: [30, 30], maxZoom: 14 });
+            } catch (e) {
+                console.error("Leaflet fitBounds failed:", e);
+            }
+        }
+    }
+
+    private saveRecentSearch(query: string) {
+        let searches: string[] = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+        searches = searches.filter(s => s.toLowerCase() !== query.toLowerCase());
+        searches.unshift(query);
+        if (searches.length > 5) searches.pop();
+        localStorage.setItem("recent_searches", JSON.stringify(searches));
+        this.renderRecentSearches();
+    }
+
+    private renderRecentSearches() {
+        const container = document.getElementById("listing-recent-searches-container");
+        const list = document.getElementById("listing-recent-searches-list");
+        if (!container || !list) return;
+
+        const searches: string[] = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+        if (searches.length === 0) {
+            container.classList.add("d-none");
+            return;
+        }
+
+        container.classList.remove("d-none");
+        list.innerHTML = searches.map(query => `
+            <span class="recent-search-chip" data-query="${query}">
+                <i class="fas fa-history"></i>
+                <span>${query}</span>
+                <span class="recent-chip-remove" data-remove-query="${query}"><i class="fas fa-times-circle"></i></span>
+            </span>
+        `).join('') + `<span class="recent-search-clear-all" id="listing-recent-clear-all-btn">Clear all</span>`;
+
+        list.querySelectorAll(".recent-search-chip").forEach(chip => {
+            chip.addEventListener("click", (e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest(".recent-chip-remove")) {
+                    const removeQuery = target.closest(".recent-chip-remove")!.getAttribute("data-remove-query") || "";
+                    this.removeRecentSearch(removeQuery);
+                    e.stopPropagation();
+                    return;
+                }
+                const input = this.getInput("listing-search-input");
+                if (input) {
+                    input.value = (chip as HTMLElement).dataset.query || "";
+                    this.saveRecentSearch(input.value);
+                    this.render();
+                }
+            });
+        });
+
+        document.getElementById("listing-recent-clear-all-btn")?.addEventListener("click", () => {
+            localStorage.setItem("recent_searches", "[]");
+            this.renderRecentSearches();
+        });
+    }
+
+    private removeRecentSearch(query: string) {
+        let searches: string[] = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+        searches = searches.filter(s => s !== query);
+        localStorage.setItem("recent_searches", JSON.stringify(searches));
+        this.renderRecentSearches();
     }
 }
 

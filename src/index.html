@@ -34,10 +34,8 @@
 
             <!-- Minimalist Headline -->
             <div class="hero-text-block mb-5">
-                <h1 class="text-title main-headline" style="text-align: center;"><span class="text-accent">BOU</span>
-                    Marketplace</h1>
-                <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria's Most Exclusive Real
-                    Estate Properties</p>
+                <h1 class="text-title main-headline" style="text-align: center;"><span class="text-accent">Marketplace</span></h1>
+                <p class="subtitle-text" style="text-align: center;">Secure Access to Nigeria's Most Exclusive Real Estate Properties</p>
                 <div id="ninja-container" class="mt-3"></div>
             </div>
 
@@ -146,38 +144,27 @@
                     </div>
                 </div>
 
+                <!-- Recent Searches Container -->
+                <div id="recent-searches-container" class="recent-searches-container d-none mt-3">
+                    <span class="text-label" style="font-size: 0.65rem; opacity: 0.5; margin-right: 0.5rem; text-transform: uppercase;">Recent Searches:</span>
+                    <div id="recent-searches-list" class="recent-searches-list" style="display: inline-flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                </div>
+
                 <!-- Smart Feedback Strip (shown on relevant queries) -->
                 <div id="search-feedback" class="search-feedback d-none"></div>
 
                 <div class="terminal-footer-hint mt-2">
-                    <span class="text-label" style="font-size: 0.6rem; opacity: 0.3;">
+                    <span class="text-label" style="font-size: 0.65rem; opacity: 0.3;">
                         <i class="fas fa-bolt me-1"></i> PRESS ENTER TO SEARCH &nbsp;·&nbsp; <i
                             class="fas fa-microphone me-1"></i> CLICK MIC FOR VOICE
                     </span>
                 </div>
 
-                <div class="listing-cta-row">
+                <div class="listing-cta-row mt-3">
                     <a href="listing.html" class="listing-cta-link">
                         <i class="fas fa-layer-group"></i>
                         Browse all premium listings
                     </a>
-                </div>
-
-                <!-- MagicUI Marquee (Sample Searches) -->
-                <div class="marquee-wrapper mt-5">
-                    <div class="marquee-content">
-                        <span class="suggestion-chip">"Show me luxury penthouses in Victoria Island"</span>
-                        <span class="suggestion-chip">"Any 5-bed detached houses in Maitama?"</span>
-                        <span class="suggestion-chip">"Commercial plots in Eko Atlantic under 500M"</span>
-                        <span class="suggestion-chip">"3 bedroom flat for rent in Ikoyi"</span>
-                        <span class="suggestion-chip">"Duplex for sale in Lekki under 200M"</span>
-                        <!-- Duplicate for seamless loop -->
-                        <span class="suggestion-chip">"Show me luxury penthouses in Victoria Island"</span>
-                        <span class="suggestion-chip">"Any 5-bed detached houses in Maitama?"</span>
-                        <span class="suggestion-chip">"Commercial plots in Eko Atlantic under 500M"</span>
-                        <span class="suggestion-chip">"3 bedroom flat for rent in Ikoyi"</span>
-                        <span class="suggestion-chip">"Duplex for sale in Lekki under 200M"</span>
-                    </div>
                 </div>
             </div>
 
@@ -203,7 +190,7 @@
         <div class="container">
             <div class="footer-top">
                 <div class="footer-brand">
-                    <div class="footer-logo-mark">BOU<span>.</span>MARKETPLACE</div>
+                    <div class="footer-logo-mark">MARKETPLACE</div>
                     <p class="footer-tagline">Properties for the Discerning Clients</p>
                 </div>
                 <div class="footer-links">
@@ -215,11 +202,10 @@
                         </ul>
                     </div>
                     <div class="footer-link-group">
-                        <h4>BOU Ecosystem</h4>
+                        <h4>Partners</h4>
                         <ul>
-                            <li><a href="https://boucloud.io">BOU Cloud</a></li>
-                            <li><a href="#">Xtate</a></li>
-                            <li><a href="#">Ninja</a></li>
+                            <li><a href="#">Nigeria Property Centre</a></li>
+                            <li><a href="#">Jiji</a></li>
                         </ul>
                     </div>
                     <div class="footer-link-group">
@@ -235,7 +221,7 @@
 
 
             <div class="footer-bottom">
-                <p class="footer-copyright">&copy; 2026 BOU Group. All rights reserved.</p>
+                <p class="footer-copyright">&copy; 2026 Marketplace. All rights reserved.</p>
                 <div class="footer-legal">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Access</a>
@@ -327,12 +313,18 @@
                 <h3 class="stage-description-header">NEURAL AMENITIES</h3>
                 <div id="stage-amenities-list" class="amenities-grid"></div>
             </div>
+
+            <!-- Map Section -->
+            <div class="stage-map-section" id="stage-map-section" style="margin-top: 1.5rem;">
+                <h3 class="stage-description-header">PROPERTY LOCATION</h3>
+                <div id="stage-map" style="height: 250px; width: 100%; border-radius: 8px; margin-top: 0.5rem; border: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 1;"></div>
+            </div>
         </div>
 
         <div class="stage-footer">
             <div class="footer-verified">
                 <i class="fas fa-shield-alt text-accent"></i>
-                <span id="stage-source-label">BOU VERIFIED ASSET</span>
+                <span id="stage-source-label">VERIFIED ASSET</span>
             </div>
         </div>
     </div>

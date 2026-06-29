@@ -1,12 +1,12 @@
-# BOU Marketplace - Project Task List
+# Marketplace - Project Task List
 
 ## Overview
-BOU Marketplace is a premium property listing platform specializing in high-end Nigerian real estate. The platform aggregates listings from top sources, enhances them using AI, and presents them in a high-fidelity, user-friendly interface.
+Marketplace is a premium property listing platform specializing in high-end Nigerian real estate. The platform aggregates listings from top sources, enhances them using AI, and presents them in a high-fidelity, user-friendly interface.
 
 ## Core Features
 - [x] **Property Aggregation**: Scrape and filter top property posts (Value > ₦10,000,000) from Nigeria Property Centre.
 - [x] **AI Enhancement**: 
-    - [x] Clean up and optimize property descriptions using BOU Marketplace Intelligence.
+    - [x] Clean up and optimize property descriptions using Marketplace Intelligence.
     - [x] Ensure high-quality visual presentation using high-resolution images (thumbs stripped).
 - [x] **Source Attribution**: Maintain traceability by linking every property back to its original source URL.
 - [x] **Functional Marketplace**:

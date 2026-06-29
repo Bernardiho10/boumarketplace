@@ -1581,5 +1581,190 @@ h3 {
 }
 
 /* ========================
+   RECENT SEARCH CHIPS
+======================== */
+.recent-searches-container, .listing-recent-searches-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    animation: fadeIn 0.4s ease;
+}
+.recent-search-chip {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 99px;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.recent-search-chip:hover {
+    background: rgba(0, 255, 136, 0.06);
+    border-color: rgba(0, 255, 136, 0.25);
+    color: var(--emerald);
+    transform: translateY(-1px);
+}
+.recent-search-chip .recent-chip-remove {
+    opacity: 0.4;
+    transition: opacity 0.2s ease;
+    margin-left: 0.2rem;
+}
+.recent-search-chip .recent-chip-remove:hover {
+    opacity: 1;
+    color: #ff4a4a;
+}
+.recent-search-clear-all {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s ease;
+    margin-left: 0.5rem;
+}
+.recent-search-clear-all:hover {
+    color: #ff4a4a;
+}
+
+/* ========================
+   SPLIT VIEW LISTINGS LAYOUT
+======================== */
+.listing-split-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .listing-split-container {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    .listing-list-side {
+        flex: 1.2;
+    }
+    .listing-map-side {
+        flex: 0.8;
+        position: sticky;
+        top: 2rem;
+        height: calc(100vh - 120px);
+        min-height: 550px !important;
+    }
+}
+
+/* ========================
+   CUSTOM LEAFLET PRICE MARKERS & MAP GLASSMORPHISM
+======================== */
+.custom-price-marker {
+    background: transparent;
+    border: none;
+}
+.map-price-badge {
+    background: rgba(10, 15, 10, 0.85);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid var(--emerald);
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.15);
+    white-space: nowrap;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+.map-price-badge:hover {
+    transform: scale(1.08);
+    background: rgba(0, 255, 136, 0.18);
+    color: var(--emerald);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
+}
+.map-marketplace-icon {
+    color: var(--emerald);
+    font-size: 10px;
+}
+
+/* Leaflet Overrides for futuristic theme */
+.leaflet-container {
+    background: #080c07 !important;
+}
+.leaflet-bar {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background-color: rgba(10, 15, 10, 0.85) !important;
+    backdrop-filter: blur(8px);
+    box-shadow: none !important;
+}
+.leaflet-bar a {
+    background-color: transparent !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.2s ease;
+}
+.leaflet-bar a:hover {
+    color: var(--emerald) !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+.leaflet-popup-content-wrapper {
+    background: rgba(8, 12, 7, 0.95) !important;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    color: #fff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    font-family: var(--font-body);
+}
+.leaflet-popup-tip {
+    background: rgba(8, 12, 7, 0.95) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+.map-popup-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 180px;
+    padding: 0.25rem;
+}
+.map-popup-img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.map-popup-price {
+    font-weight: 800;
+    color: var(--emerald);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    margin-top: 0.2rem;
+}
+.map-popup-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.map-popup-link {
+    font-size: 0.7rem;
+    color: var(--emerald);
+    text-decoration: underline;
+    font-weight: 600;
+    margin-top: 0.2rem;
+    display: inline-block;
+}
+
+/* ========================
    END OF MARKETPLACE STYLES
 ======================== */

@@ -1,6 +1,9 @@
 import { MagicElement, MagicView, MagicViewModel, MagicEvent } from "../../magicui/src/index";
 import { DataProvider } from "./lib/data-provider";
 import { NINJA_CONFIG } from './config';
+import { getCoordinatesWithJitter } from "./property";
+
+declare let L: any;
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -82,11 +85,64 @@ class NeuralViewModel extends MagicViewModel {
     }
 }
 
+class PlaceholderRotator {
+    private element: HTMLInputElement;
+    private suggestions: string[];
+    private currentIndex = 0;
+    private intervalId: ReturnType<typeof setInterval> | null = null;
+    private isTyping = false;
+
+    constructor(element: HTMLInputElement, suggestions: string[]) {
+        this.element = element;
+        this.suggestions = suggestions;
+        this.start();
+        this.bindEvents();
+    }
+
+    start() {
+        if (this.intervalId) clearInterval(this.intervalId);
+        this.element.placeholder = "e.g. " + this.suggestions[this.currentIndex];
+        this.intervalId = setInterval(() => {
+            if (!this.isTyping && document.activeElement !== this.element && !this.element.value) {
+                this.currentIndex = (this.currentIndex + 1) % this.suggestions.length;
+                this.element.placeholder = "e.g. " + this.suggestions[this.currentIndex];
+            }
+        }, 3500);
+    }
+
+    stop() {
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+    }
+
+    private bindEvents() {
+        this.element.addEventListener("focus", () => {
+            this.isTyping = true;
+            this.element.placeholder = "";
+        });
+        this.element.addEventListener("blur", () => {
+            this.isTyping = false;
+            if (!this.element.value) {
+                this.start();
+            }
+        });
+        this.element.addEventListener("input", () => {
+            if (this.element.value) {
+                this.element.placeholder = "";
+            }
+        });
+    }
+}
+
 // ─── View ─────────────────────────────────────────────────────────────────────
 
 class NeuralMarketView extends MagicView {
     private selectedType: string = "";
     private feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
+    private stageMap: any = null;
+    private rotator: PlaceholderRotator | null = null;
 
     get viewModel(): NeuralViewModel {
         return this._viewModel as NeuralViewModel;
@@ -120,9 +176,14 @@ class NeuralMarketView extends MagicView {
 
         this.initFeaturedGrid();
         this.initScrollReveal();
-        this.initSuggestionChips();
         this.initTraditionalFilters();
         this.initTypePills();
+
+        const searchInput = document.getElementById("search-input") as HTMLInputElement;
+        if (searchInput) {
+            this.rotator = new PlaceholderRotator(searchInput, GHOST_SUGGESTIONS);
+        }
+        this.renderRecentSearches();
 
         // Stage controls
         document.getElementById("close-stage-btn")?.addEventListener("click", () => this.exitStage());
@@ -231,10 +292,77 @@ class NeuralMarketView extends MagicView {
         const input = document.getElementById("search-input") as HTMLInputElement;
         input?.dispatchEvent(new Event('input'));
 
+        const query = input?.value.trim();
+        if (query && query.length >= 3) {
+            this.saveRecentSearch(query);
+        }
+
         setTimeout(() => {
             this.viewModel.set("force_search", false);
             terminal?.classList.remove("force-search-active");
         }, 1200);
+    }
+
+    private saveRecentSearch(query: string) {
+        let searches: string[] = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+        searches = searches.filter(s => s.toLowerCase() !== query.toLowerCase());
+        searches.unshift(query);
+        if (searches.length > 5) searches.pop();
+        localStorage.setItem("recent_searches", JSON.stringify(searches));
+        this.renderRecentSearches();
+    }
+
+    private renderRecentSearches() {
+        const container = document.getElementById("recent-searches-container");
+        const list = document.getElementById("recent-searches-list");
+        if (!container || !list) return;
+
+        const searches: string[] = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+        if (searches.length === 0) {
+            container.classList.add("d-none");
+            return;
+        }
+
+        container.classList.remove("d-none");
+        list.innerHTML = searches.map(query => `
+            <span class="recent-search-chip" data-query="${query}">
+                <i class="fas fa-history"></i>
+                <span>${query}</span>
+                <span class="recent-chip-remove" data-remove-query="${query}"><i class="fas fa-times-circle"></i></span>
+            </span>
+        `).join('') + `<span class="recent-search-clear-all" id="recent-clear-all-btn">Clear all</span>`;
+
+        // Bind clicks to chips
+        list.querySelectorAll(".recent-search-chip").forEach(chip => {
+            chip.addEventListener("click", (e) => {
+                const target = e.target as HTMLElement;
+                if (target.closest(".recent-chip-remove")) {
+                    const removeQuery = target.closest(".recent-chip-remove")!.getAttribute("data-remove-query") || "";
+                    this.removeRecentSearch(removeQuery);
+                    e.stopPropagation();
+                    return;
+                }
+                const input = document.getElementById("search-input") as HTMLInputElement;
+                if (input) {
+                    input.value = (chip as HTMLElement).dataset.query || "";
+                    input.dispatchEvent(new Event('input'));
+                    this.triggerForceSearch();
+                }
+            });
+        });
+
+        // Bind clear all
+        document.getElementById("recent-clear-all-btn")?.addEventListener("click", () => {
+            localStorage.setItem("recent_searches", "[]");
+            this.renderRecentSearches();
+        });
+    }
+
+    private removeRecentSearch(query: string) {
+        let searches: string[] = JSON.parse(localStorage.getItem("recent_searches") || "[]");
+        searches = searches.filter(s => s !== query);
+        localStorage.setItem("recent_searches", JSON.stringify(searches));
+        this.renderRecentSearches();
     }
 
     // ─── Clear Search ──────────────────────────────────────────────────────────
@@ -570,7 +698,7 @@ class NeuralMarketView extends MagicView {
         // WhatsApp and Call Actions
         const whatsappBtn = document.getElementById("stage-whatsapp-btn") as HTMLAnchorElement;
         if (whatsappBtn) {
-            whatsappBtn.href = prop.agentWhatsApp || `https://wa.me/2348100000000?text=Hi,%20I'm%20interested%20in%20${encodeURIComponent(prop.title)}%20on%20BOU%20Marketplace`;
+            whatsappBtn.href = prop.agentWhatsApp || `https://wa.me/2348100000000?text=Hi,%20I'm%20interested%20in%20${encodeURIComponent(prop.title)}%20on%20Marketplace`;
         }
         
         const callBtn = document.getElementById("stage-call-btn") as HTMLAnchorElement;
@@ -607,7 +735,7 @@ class NeuralMarketView extends MagicView {
 
         const sourceLabelEl = document.getElementById("stage-source-label");
         if (sourceLabelEl) {
-            sourceLabelEl.innerText = prop.sourceSite ? `SOURCE: ${prop.sourceSite.toUpperCase()}` : "BOU VERIFIED ASSET";
+            sourceLabelEl.innerText = prop.sourceSite ? `SOURCE: ${prop.sourceSite.toUpperCase()}` : "VERIFIED ASSET";
         }
 
         const amenitiesList = document.getElementById("stage-amenities-list");
@@ -620,9 +748,55 @@ class NeuralMarketView extends MagicView {
         stage.classList.remove("d-none");
         document.body.style.overflow = "hidden";
         this.viewModel.set("is_stage_active", true);
+
+        // Render Map inside Stage
+        const stageMapContainer = document.getElementById("stage-map");
+        if (stageMapContainer && typeof L !== 'undefined') {
+            try {
+                stageMapContainer.innerHTML = `<div id="stage-map-inner" style="height: 100%; width: 100%;"></div>`;
+                const coords = getCoordinatesWithJitter(prop.location, prop.id);
+                this.stageMap = L.map("stage-map-inner", {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView(coords, 14);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 20
+                }).addTo(this.stageMap);
+
+                L.circle(coords, {
+                    color: '#00ff88',
+                    fillColor: '#00ff88',
+                    fillOpacity: 0.1,
+                    radius: 350
+                }).addTo(this.stageMap);
+
+                const priceAbbr = prop.price.split(' ')[0];
+                const customIcon = L.divIcon({
+                    className: 'custom-price-marker',
+                    html: `<div class="map-price-badge"><i class="fas fa-store map-marketplace-icon"></i> ₦${priceAbbr}</div>`,
+                    iconSize: [80, 30],
+                    iconAnchor: [40, 15]
+                });
+
+                L.marker(coords, { icon: customIcon }).addTo(this.stageMap);
+
+                setTimeout(() => {
+                    if (this.stageMap) this.stageMap.invalidateSize();
+                }, 100);
+            } catch (err) {
+                console.error("Leaflet stage map initialization failed:", err);
+            }
+        }
     }
 
     exitStage() {
+        if (this.stageMap) {
+            try {
+                this.stageMap.remove();
+            } catch (e) {}
+            this.stageMap = null;
+        }
         const stage = document.getElementById("property-stage");
         if (stage) {
             stage.classList.add("d-none");
@@ -673,7 +847,7 @@ class NeuralMarketView extends MagicView {
             if (p.bathrooms > 0) specParts.push(`${p.bathrooms} Baths`);
             if (p.toilets > 0) specParts.push(`${p.toilets} Toilets`);
             const specText = specParts.length > 0 ? ' · ' + specParts.join(' · ') : '';
-            const sourceBadge = p.sourceSite ? `${p.category} · ${p.sourceSite}` : `${p.category} · BOU Verified`;
+            const sourceBadge = p.sourceSite ? `${p.category} · ${p.sourceSite}` : `${p.category} · Verified`;
 
             return `
                 <a href="property.html?id=${p.id}" class="bento-card" style="transition-delay:${i * 0.04}s;">
@@ -726,17 +900,6 @@ class NeuralMarketView extends MagicView {
                 this.selectedType = pill.getAttribute('data-type') || "";
                 const input = document.getElementById('search-input') as HTMLInputElement;
                 if (input) input.dispatchEvent(new Event('input'));
-            });
-        });
-    }
-
-    initSuggestionChips() {
-        const input = document.getElementById('search-input') as HTMLInputElement;
-        document.querySelectorAll('.suggestion-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                input.value = chip.textContent?.replace(/"/g, '') || "";
-                input.dispatchEvent(new Event('input'));
-                this.triggerForceSearch();
             });
         });
     }

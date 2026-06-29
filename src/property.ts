@@ -2,6 +2,35 @@ import { MagicView, MagicViewModel } from "../../magicui/src/index";
 import { type Property } from "./lib/mock-data";
 import { DataProvider } from "./lib/data-provider";
 
+declare let L: any;
+
+export function getPropertyCoordinates(locationStr: string): [number, number] {
+    const lower = locationStr.toLowerCase();
+    if (lower.includes("ikoyi") || lower.includes("bourdillon")) return [6.4549, 3.4246];
+    if (lower.includes("banana island")) return [6.4638, 3.4557];
+    if (lower.includes("victoria island")) return [6.4281, 3.4219];
+    if (lower.includes("chevron") || lower.includes("orchid") || lower.includes("ikate") || lower.includes("vgc") || lower.includes("lekki")) return [6.4281, 3.4219];
+    if (lower.includes("ikeja")) return [6.6018, 3.3515];
+    if (lower.includes("yaba")) return [6.5095, 3.3711];
+    if (lower.includes("epe")) return [6.5833, 3.9833];
+    if (lower.includes("maitama")) return [9.0882, 7.5006];
+    if (lower.includes("guzape")) return [9.0227, 7.5020];
+    if (lower.includes("asokoro")) return [9.0381, 7.5186];
+    if (lower.includes("wuse")) return [9.0683, 7.4619];
+    if (lower.includes("abuja")) return [9.0765, 7.3986];
+    if (lower.includes("port harcourt")) return [4.8156, 7.0498];
+    if (lower.includes("ibadan") || lower.includes("bodija")) return [7.3775, 3.9470];
+    if (lower.includes("enugu")) return [6.4584, 7.5464];
+    return [6.5244, 3.3792]; // Lagos general default
+}
+
+export function getCoordinatesWithJitter(locationStr: string, id: number): [number, number] {
+    const base = getPropertyCoordinates(locationStr);
+    const latOffset = ((id * 17) % 100 - 50) / 15000;
+    const lngOffset = ((id * 23) % 100 - 50) / 15000;
+    return [base[0] + latOffset, base[1] + lngOffset];
+}
+
 const FALLBACK_PROPERTY_IMAGE = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&h=900";
 
 class PropertyDetailViewModel extends MagicViewModel {
@@ -84,7 +113,7 @@ class PropertyDetailView extends MagicView {
 
         // Badges and status
         this.setText("prop-category", prop.category);
-        this.setText("prop-source", prop.sourceSite || "BOU Verified");
+        this.setText("prop-source", prop.sourceSite || "Verified");
         this.setText("prop-status", prop.status);
         this.setText("prop-ref-id", `REF: ${prop.refId || '—'}`);
 
@@ -152,7 +181,7 @@ class PropertyDetailView extends MagicView {
         }
 
         // Agent Card Info
-        this.setText("agent-name", prop.agentName || "BOU Verified Agent");
+        this.setText("agent-name", prop.agentName || "Verified Agent");
         const agentStatusText = prop.agentVerified 
             ? '<i class="fas fa-check-circle" style="color: #00e676;"></i> Verified Partner' 
             : 'Standard Partner';
@@ -228,8 +257,46 @@ class PropertyDetailView extends MagicView {
             });
         }
 
+        // Render Map
+        const coords = getCoordinatesWithJitter(prop.location, prop.id);
+        const mapContainer = document.getElementById("property-map");
+        if (mapContainer && typeof L !== 'undefined') {
+            try {
+                // Initialize map
+                const map = L.map("property-map", {
+                    zoomControl: true,
+                    attributionControl: false
+                }).setView(coords, 14);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 20
+                }).addTo(map);
+
+                // Privacy circle
+                L.circle(coords, {
+                    color: '#00ff88',
+                    fillColor: '#00ff88',
+                    fillOpacity: 0.1,
+                    radius: 350
+                }).addTo(map);
+
+                // Price badge marker
+                const priceAbbr = prop.price.split(' ')[0];
+                const customIcon = L.divIcon({
+                    className: 'custom-price-marker',
+                    html: `<div class="map-price-badge"><i class="fas fa-store map-marketplace-icon"></i> ₦${priceAbbr}</div>`,
+                    iconSize: [80, 30],
+                    iconAnchor: [40, 15]
+                });
+
+                L.marker(coords, { icon: customIcon }).addTo(map);
+            } catch (err) {
+                console.error("Leaflet map initialization failed:", err);
+            }
+        }
+
         // Update page title
-        document.title = `${prop.title} — BOU Marketplace`;
+        document.title = `${prop.title} — Marketplace`;
     }
 
     setText(id: string, html: string) {
