@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Marketplace | Premium Real Estate</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  
+  <!-- Leaflet CSS &amp; JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Site Metadata -->
+  <meta name="description" content="A premium, AI-driven property marketplace for Nigeria. Search with voice or text."/>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=&#39;http://www.w3.org/2000/svg&#39; viewBox=&#39;0 0 64 64&#39;%3E%3Crect width=&#39;64&#39; height=&#39;64&#39; rx=&#39;14&#39; fill=&#39;%23050804&#39;/%3E%3Cpath d=&#39;M14 37 32 17l18 20v13H38V36H26v14H14V37Z&#39; fill=&#39;%2300ff88&#39;/%3E%3C/svg%3E"/>
+  
+  <link rel="stylesheet" href="index.css"/>
+  <!-- Page specific styles will be injected here if needed, but index.css covers core -->
+</head>
+<body class="neural-theme bg-dark text-light overflow-x-hidden">
+    <div class="canvas"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
+    <!-- Clean Background -->
+    
+    <!-- Application Info Layer -->
+    <div id="app-info" class="fixed-top" style="z-index: 1000;"></div>
+
+    <!-- Main Content Wrapper -->
+    <main id="main-content" class="min-vh-100 d-flex flex-column">
+        <div class="page" id="marketplace-listing-view">
+    <link rel="stylesheet" href="listing.css"/>
+
+    <section class="listing-shell container">
+        <div class="listing-topbar">
+            <a href="index.html" class="listing-back-link">
+                <i class="fas fa-arrow-left"></i>
+                Marketplace Search
+            </a>
+            <div class="listing-source-pill">
+                <span class="status-dot"></span>
+                Live listings aggregated from Jiji and Nigeria Property Centre
+            </div>
+        </div>
+
+        <div class="listing-hero">
+            <div>
+                <span class="text-label text-accent">PROPERTY INDEX</span>
+                <h1>High-value Nigerian properties, filtered with intent.</h1>
+                <p>Search through live premium listings from Jiji and Nigeria Property Centre, enhanced with AI and direct contact options.</p>
+            </div>
+            <div class="listing-hero-card">
+                <strong id="listing-total-count">0</strong>
+                <span>live aggregated assets</span>
+            </div>
+        </div>
+
+        <div class="listing-command-panel">
+            <div class="listing-search-row">
+                <i class="fas fa-search"></i>
+                <input id="listing-search-input" type="text" placeholder="Search by location, property type, budget, beds, or status" autocomplete="off" spellcheck="false"/>
+                <button id="listing-voice-btn" class="listing-icon-btn" type="button" aria-label="Search listings by voice">
+                    <i class="fas fa-microphone"></i>
+                </button>
+            </div>
+            <div id="listing-recent-searches-container" class="listing-recent-searches-container d-none mt-2">
+                <span class="text-label" style="font-size: 0.65rem; opacity: 0.5; margin-right: 0.5rem; text-transform: uppercase;">Recent Searches:</span>
+                <div id="listing-recent-searches-list" class="listing-recent-searches-list" style="display: inline-flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+            </div>
+            <div id="listing-feedback" class="listing-feedback d-none"></div>
+            <div class="listing-filter-grid">
+                <select id="listing-location-filter" aria-label="Filter listings by location">
+                    <option value="">All locations</option>
+                    <option value="lagos">Lagos</option>
+                    <option value="lekki">Lekki</option>
+                    <option value="ikoyi">Ikoyi</option>
+                    <option value="abuja">Abuja</option>
+                    <option value="port harcourt">Port Harcourt</option>
+                    <option value="ibadan">Ibadan</option>
+                    <option value="enugu">Enugu</option>
+                </select>
+                <select id="listing-type-filter" aria-label="Filter listings by property type">
+                    <option value="">All property types</option>
+                    <option value="duplex">Duplex</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="flat">Flat</option>
+                    <option value="mansion">Mansion</option>
+                    <option value="penthouse">Penthouse</option>
+                    <option value="commercial">Commercial</option>
+                    <option value="land">Land</option>
+                </select>
+                <select id="listing-price-filter" aria-label="Filter listings by price range">
+                    <option value="">Any budget</option>
+                    <option value="0-50000000">Under ₦50M</option>
+                    <option value="50000000-150000000">₦50M - ₦150M</option>
+                    <option value="150000000-500000000">₦150M - ₦500M</option>
+                    <option value="500000000-99999999999">₦500M+</option>
+                </select>
+                <select id="listing-status-filter" aria-label="Filter listings by status">
+                    <option value="">Any status</option>
+                    <option value="for sale">For Sale</option>
+                    <option value="for rent">For Rent</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="listing-quick-prompts" aria-label="Suggested property searches">
+            <button type="button" data-query="4 bedroom duplex in Lekki under 200M">4-bed Lekki duplex</button>
+            <button type="button" data-query="penthouse for rent in Abuja">Abuja penthouse rent</button>
+            <button type="button" data-query="waterfront mansion in Ikoyi">Ikoyi waterfront mansion</button>
+            <button type="button" data-query="commercial property in Victoria Island">VI commercial property</button>
+        </div>
+
+        <div class="listing-split-container">
+            <div class="listing-list-side">
+                <div class="listing-results-header">
+                    <span id="listing-result-count" class="text-label text-accent">0 RESULTS</span>
+                    <button id="listing-clear-btn" type="button">Clear filters</button>
+                </div>
+                <div id="listing-grid" class="listing-grid"></div>
+            </div>
+            <div class="listing-map-side" id="listing-map-side">
+                <div id="listings-map" style="height: 100%; min-height: 500px; width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 1;"></div>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="listing.js"></script>
+</div>
+
+    </main>
+
+    <script type="module">
+        const page = document.querySelector('.page');
+        const scriptId = page ? page.id : 'marketplace-search-view';
+        if (scriptId === 'marketplace-property-view') {
+            import('./property.js');
+        } else if (scriptId === 'marketplace-listing-view') {
+            import('./listing.js');
+        } else {
+            import('./index.js');
+        }
+    </script>
+   
+    <script src="https://cdn.boucloud.io/ninja.js" async="" defer=""></script>
+
+
+</body></html>
