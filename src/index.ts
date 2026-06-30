@@ -159,7 +159,7 @@ class NeuralMarketView extends MagicView {
         document.getElementById("voice-search-btn")?.addEventListener("click", () => this.startVoiceSearch());
         document.getElementById("voice-stop-btn")?.addEventListener("click", () => this.stopVoiceSearch());
         document.getElementById("clear-results-btn")?.addEventListener("click", () => this.clearSearch());
-        document.getElementById("search-input")?.addEventListener("input", event => this.parseConversationalIntent(event as MagicEvent));
+        document.getElementById("search-input")?.addEventListener("input", event => this.parseConversationalIntent(event as unknown as MagicEvent));
 
         // Search on Enter
         document.getElementById("search-input")?.addEventListener("keydown", (e) => {
@@ -698,12 +698,14 @@ class NeuralMarketView extends MagicView {
         // WhatsApp and Call Actions
         const whatsappBtn = document.getElementById("stage-whatsapp-btn") as HTMLAnchorElement;
         if (whatsappBtn) {
-            whatsappBtn.href = prop.agentWhatsApp || `https://wa.me/2348100000000?text=Hi,%20I'm%20interested%20in%20${encodeURIComponent(prop.title)}%20on%20Marketplace`;
+            whatsappBtn.href = prop.original_url || '#';
+            whatsappBtn.target = "_blank";
         }
         
         const callBtn = document.getElementById("stage-call-btn") as HTMLAnchorElement;
         if (callBtn) {
-            callBtn.href = prop.agentPhone || "tel:+2348100000000";
+            callBtn.href = prop.original_url || '#';
+            callBtn.target = "_blank";
         }
 
         // Safety Alert Banner

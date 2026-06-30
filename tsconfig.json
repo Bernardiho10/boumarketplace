@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "ignoreDeprecations": "6.0",
+    "target": "es2021",
     "module": "es2020",
     "moduleResolution": "node",
     "esModuleInterop": true,
@@ -11,10 +12,11 @@
     "rootDir": "..",
     "outDir": "./public/assets/js",
     "baseUrl": ".",
+    "types": ["node"],
     "paths": {
       "@magicui/*": ["../magicui/src/*"]
     }
   },
-  "include": ["./src", "../magicui/src"],
+  "include": ["./src", "../magicui/src", "./scripts"],
   "exclude": ["./node_modules", "./public"]
 }

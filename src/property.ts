@@ -237,9 +237,15 @@ class PropertyDetailView extends MagicView {
 
         // Contact CTA Links (WhatsApp & Call)
         const btnWhatsapp = document.getElementById("btn-whatsapp-agent") as HTMLAnchorElement;
-        if (btnWhatsapp) btnWhatsapp.href = prop.agentWhatsApp || '#';
+        if (btnWhatsapp) {
+            btnWhatsapp.href = prop.original_url || '#';
+            btnWhatsapp.target = "_blank";
+        }
         const btnCall = document.getElementById("btn-call-agent") as HTMLAnchorElement;
-        if (btnCall) btnCall.href = prop.agentPhone || 'tel:+2348100000000';
+        if (btnCall) {
+            btnCall.href = prop.original_url || '#';
+            btnCall.target = "_blank";
+        }
 
         // Audio button
         const btnAudio = document.getElementById("btn-read-aloud");
@@ -295,6 +301,10 @@ class PropertyDetailView extends MagicView {
             }
         }
 
+        // Bind Lightbox and Tenant Application
+        this.bindLightbox();
+        this.bindTenantApplication(prop);
+
         // Update page title
         document.title = `${prop.title} — Marketplace`;
     }
@@ -325,6 +335,22 @@ class PropertyDetailView extends MagicView {
                 this.startGallerySlider();
             });
         });
+
+        // Main gallery next/prev overlay navigation
+        const btnPrev = document.getElementById("btn-gallery-prev");
+        const btnNext = document.getElementById("btn-gallery-next");
+
+        btnPrev?.addEventListener("click", (e) => {
+            e.stopPropagation(); // Avoid triggering lightbox open
+            this.showGalleryImage(this.activeGalleryIndex - 1);
+            this.startGallerySlider();
+        });
+
+        btnNext?.addEventListener("click", (e) => {
+            e.stopPropagation(); // Avoid triggering lightbox open
+            this.showGalleryImage(this.activeGalleryIndex + 1);
+            this.startGallerySlider();
+        });
     }
 
     private startGallerySlider() {
@@ -333,6 +359,292 @@ class PropertyDetailView extends MagicView {
         this.sliderInterval = setInterval(() => {
             this.showGalleryImage(this.activeGalleryIndex + 1);
         }, 6500);
+    }
+
+    private bindLightbox() {
+        const mainImg = document.getElementById("main-image");
+        const lightbox = document.getElementById("gallery-lightbox");
+        const lightboxClose = document.getElementById("btn-close-lightbox");
+        const lightboxPrev = document.getElementById("btn-lightbox-prev");
+        const lightboxNext = document.getElementById("btn-lightbox-next");
+
+        if (!mainImg || !lightbox || !lightboxClose) return;
+
+        // Click main image to open lightbox
+        mainImg.addEventListener("click", () => {
+            lightbox.classList.remove("d-none");
+            this.updateLightboxImage(this.activeGalleryIndex);
+        });
+
+        // Close lightbox
+        lightboxClose.addEventListener("click", () => {
+            lightbox.classList.add("d-none");
+        });
+
+        // Lightbox prev/next buttons
+        lightboxPrev?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.updateLightboxImage(this.activeGalleryIndex - 1);
+        });
+
+        lightboxNext?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.updateLightboxImage(this.activeGalleryIndex + 1);
+        });
+
+        // Keyboard navigation & close
+        document.addEventListener("keydown", (e) => {
+            if (lightbox.classList.contains("d-none")) return;
+            if (e.key === "Escape") {
+                lightbox.classList.add("d-none");
+            } else if (e.key === "ArrowLeft") {
+                this.updateLightboxImage(this.activeGalleryIndex - 1);
+            } else if (e.key === "ArrowRight") {
+                this.updateLightboxImage(this.activeGalleryIndex + 1);
+            }
+        });
+    }
+
+    private updateLightboxImage(index: number) {
+        if (this.galleryImages.length === 0) return;
+        this.activeGalleryIndex = (index + this.galleryImages.length) % this.galleryImages.length;
+
+        // Keep main page image in sync
+        const mainImg = document.getElementById("main-image") as HTMLImageElement;
+        if (mainImg) mainImg.src = this.galleryImages[this.activeGalleryIndex];
+
+        const lightboxImg = document.getElementById("lightbox-main-img") as HTMLImageElement;
+        if (lightboxImg) lightboxImg.src = this.galleryImages[this.activeGalleryIndex];
+
+        // Keep standard thumbnails highlighting in sync
+        document.querySelectorAll(".prop-thumb").forEach((thumb, i) => {
+            thumb.classList.toggle("active", i === this.activeGalleryIndex);
+        });
+
+        // Render thumbs in lightbox
+        const thumbsContainer = document.getElementById("lightbox-thumbs-container");
+        if (thumbsContainer) {
+            thumbsContainer.innerHTML = this.galleryImages.map((img, i) => `
+                <img
+                    src="${img}"
+                    class="lightbox-thumb ${i === this.activeGalleryIndex ? 'active' : ''}"
+                    style="width: 60px; height: 45px; object-fit: cover; border-radius: 4px; border: 2px solid ${i === this.activeGalleryIndex ? 'var(--emerald)' : 'rgba(255,255,255,0.2)'}; cursor: pointer; transition: all 0.2s;"
+                    data-lightbox-index="${i}"
+                    onerror="this.src='${FALLBACK_PROPERTY_IMAGE}'"
+                >
+            `).join('');
+
+            thumbsContainer.querySelectorAll(".lightbox-thumb").forEach(thumb => {
+                thumb.addEventListener("click", () => {
+                    const idx = Number((thumb as HTMLElement).dataset.lightboxIndex || 0);
+                    this.updateLightboxImage(idx);
+                });
+            });
+        }
+    }
+
+    private bindTenantApplication(prop: Property) {
+        const modal = document.getElementById("tenant-modal");
+        const btnOpen = document.getElementById("btn-apply-tenant");
+        const btnClose = document.getElementById("btn-close-tenant-modal");
+        const btnCloseSuccess = document.getElementById("btn-success-close");
+
+        const btnStep1Next = document.getElementById("btn-step-1-next");
+        const btnStep2Next = document.getElementById("btn-step-2-next");
+        const btnStep2Back = document.getElementById("btn-step-2-back");
+        const btnStep3Back = document.getElementById("btn-step-3-back");
+
+        const form = document.getElementById("tenant-application-form") as HTMLFormElement;
+        const formContainer = document.getElementById("tenant-form-container");
+        const successContainer = document.getElementById("tenant-success-container");
+
+        if (!modal || !btnOpen) return;
+
+        // Custom titles based on purchase status
+        const modalTitle = document.getElementById("tenant-modal-title");
+        const modalSubtitle = document.getElementById("tenant-modal-subtitle");
+        
+        if (prop.status === "For Sale") {
+            btnOpen.innerHTML = `<i class="fas fa-gavel"></i> Make an Offer`;
+            if (modalTitle) modalTitle.textContent = "Property Purchase Offer";
+            if (modalSubtitle) modalSubtitle.textContent = "Secure buyer identity verification via government database integration.";
+            
+            const salaryLabel = Array.from(document.querySelectorAll('label')).find(el => el.textContent?.includes('MONTHLY SALARY'));
+            if (salaryLabel) salaryLabel.textContent = "AVAILABLE PURCHASE BUDGET (₦)";
+        } else {
+            btnOpen.innerHTML = `<i class="fas fa-file-contract"></i> Apply to Rent`;
+            if (modalTitle) modalTitle.textContent = "Tenant Application Form";
+            if (modalSubtitle) modalSubtitle.textContent = "Secure tenant verification via government database integration.";
+        }
+
+        // Open/Close triggers
+        btnOpen.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.open(prop.original_url, '_blank');
+        });
+
+        btnClose?.addEventListener("click", () => modal.classList.add("d-none"));
+        btnCloseSuccess?.addEventListener("click", () => modal.classList.add("d-none"));
+
+        // Steps navigation validations
+        btnStep1Next?.addEventListener("click", () => {
+            const nameInput = document.getElementById("app-full-name") as HTMLInputElement;
+            const emailInput = document.getElementById("app-email") as HTMLInputElement;
+            const phoneInput = document.getElementById("app-phone") as HTMLInputElement;
+
+            if (nameInput.checkValidity() && emailInput.checkValidity() && phoneInput.checkValidity()) {
+                this.goToStep(2);
+            } else {
+                nameInput.reportValidity();
+                emailInput.reportValidity();
+                phoneInput.reportValidity();
+            }
+        });
+
+        btnStep2Next?.addEventListener("click", () => {
+            const jobInput = document.getElementById("app-job") as HTMLInputElement;
+            const employerInput = document.getElementById("app-employer") as HTMLInputElement;
+            const salaryInput = document.getElementById("app-salary") as HTMLInputElement;
+
+            if (jobInput.checkValidity() && employerInput.checkValidity() && salaryInput.checkValidity()) {
+                this.goToStep(3);
+                this.initializeNinjaWidget();
+            } else {
+                jobInput.reportValidity();
+                employerInput.reportValidity();
+                salaryInput.reportValidity();
+            }
+        });
+
+        btnStep2Back?.addEventListener("click", () => this.goToStep(1));
+        btnStep3Back?.addEventListener("click", () => this.goToStep(2));
+
+        // Submit form
+        form?.addEventListener("submit", (e) => {
+            e.preventDefault();
+            formContainer?.classList.add("d-none");
+            successContainer?.classList.remove("d-none");
+            
+            const refEl = document.getElementById("app-reference-id");
+            if (refEl) {
+                const prefix = prop.status === "For Sale" ? "OFFER" : "APP";
+                const randNum = Math.floor(Math.random() * 900000 + 100000);
+                refEl.textContent = `REF: ${prefix}-${randNum}`;
+            }
+        });
+    }
+
+    private goToStep(stepNum: number) {
+        const step1 = document.getElementById("form-step-1");
+        const step2 = document.getElementById("form-step-2");
+        const step3 = document.getElementById("form-step-3");
+
+        const badge1 = document.getElementById("step-badge-1");
+        const badge2 = document.getElementById("step-badge-2");
+        const badge3 = document.getElementById("step-badge-3");
+
+        if (!step1 || !step2 || !step3 || !badge1 || !badge2 || !badge3) return;
+
+        step1.classList.add("d-none");
+        step2.classList.add("d-none");
+        step3.classList.add("d-none");
+
+        badge1.style.background = "rgba(255,255,255,0.08)";
+        badge1.style.color = "#fff";
+        badge1.style.borderColor = "rgba(255,255,255,0.1)";
+
+        badge2.style.background = "rgba(255,255,255,0.08)";
+        badge2.style.color = "#fff";
+        badge2.style.borderColor = "rgba(255,255,255,0.1)";
+
+        badge3.style.background = "rgba(255,255,255,0.08)";
+        badge3.style.color = "#fff";
+        badge3.style.borderColor = "rgba(255,255,255,0.1)";
+
+        if (stepNum === 1) {
+            step1.classList.remove("d-none");
+            badge1.style.background = "var(--emerald)";
+            badge1.style.color = "black";
+            badge1.style.borderColor = "var(--emerald)";
+        } else if (stepNum === 2) {
+            step2.classList.remove("d-none");
+            badge2.style.background = "var(--emerald)";
+            badge2.style.color = "black";
+            badge2.style.borderColor = "var(--emerald)";
+        } else if (stepNum === 3) {
+            step3.classList.remove("d-none");
+            badge3.style.background = "var(--emerald)";
+            badge3.style.color = "black";
+            badge3.style.borderColor = "var(--emerald)";
+        }
+    }
+
+    private async initializeNinjaWidget() {
+        const anchor = document.getElementById("ninja-form-anchor");
+        if (!anchor) return;
+        
+        anchor.innerHTML = "";
+        
+        const statusBadge = document.getElementById("app-verification-status");
+        if (statusBadge) {
+            statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(255, 193, 7, 0.15); color: #ffc107; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.25rem;"><i class="fas fa-spinner fa-spin"></i> Authenticating Session...</span>`;
+        }
+
+        try {
+            const response = await fetch("https://api.ninja.boucloud.io/auth/session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    client_key: "pk_fa9f85d0-325b-4dfa-9c0e-39f7b83f1104",
+                    client_secret: "sk_e2473e41-8a35-4137-923b-034a73e8b6d7"
+                })
+            });
+
+            if (!response.ok) throw new Error("Failed to authenticate session token");
+            const { token } = await response.json();
+
+            if ((window as any).Ninja) {
+                (window as any).Ninja.init({
+                    targetElement: "#ninja-form-anchor",
+                    apiKey: token,
+                    idType: "nin",
+                    mode: "lookup",
+                    display: "form",
+                    buttonLabel: "Verify Identity",
+                    onSuccess: (data: any) => {
+                        console.log("Ninja KYC Success:", data);
+                        if (statusBadge) {
+                            statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(0, 230, 118, 0.15); color: #00e676; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.25rem;"><i class="fas fa-check-circle"></i> ID Verified (${data.first_name || ''} ${data.last_name || ''})</span>`;
+                        }
+                        const submitBtn = document.getElementById("btn-submit-application") as HTMLButtonElement;
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.style.cursor = "pointer";
+                            submitBtn.style.opacity = "1";
+                        }
+                    },
+                    onFailure: (err: any) => {
+                        console.warn("Ninja KYC Failure:", err);
+                        if (statusBadge) {
+                            statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.25rem;"><i class="fas fa-times-circle"></i> Verification Failed</span>`;
+                        }
+                    },
+                    onError: (err: any) => {
+                        console.error("Ninja KYC Error:", err);
+                        if (statusBadge) {
+                            statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.25rem;"><i class="fas fa-exclamation-triangle"></i> SDK Connection Error</span>`;
+                        }
+                    }
+                });
+            } else {
+                throw new Error("Ninja SDK not loaded on window");
+            }
+        } catch (e) {
+            console.error("Failed to initialize verification widget:", e);
+            if (statusBadge) {
+                statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.25rem;"><i class="fas fa-times-circle"></i> API Connection Error</span>`;
+            }
+        }
     }
 
     ghostNarrate(text: string, elementId: string) {

@@ -31,7 +31,11 @@
             </a>
 
             <!-- Main Property Image -->
-            <img id="main-image" class="prop-main-img" src="" alt="Property">
+            <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <img id="main-image" class="prop-main-img" src="" alt="Property" style="cursor: zoom-in; width: 100%; height: 100%; object-fit: cover;">
+                <button id="btn-gallery-prev" class="gallery-nav-btn prev" style="position: absolute; left: 1rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; z-index: 10; transition: background 0.2s;"><i class="fas fa-chevron-left"></i></button>
+                <button id="btn-gallery-next" class="gallery-nav-btn next" style="position: absolute; right: 1rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 50%; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; z-index: 10; transition: background 0.2s;"><i class="fas fa-chevron-right"></i></button>
+            </div>
 
             <!-- Thumbnail Gallery Strip -->
             <div class="prop-thumb-bar">
@@ -45,13 +49,16 @@
                         <span class="prop-price-label">Verified Market Value</span>
                         <h2 id="prop-price" class="prop-price-value">₦ —</h2>
                     </div>
-                    <div class="prop-price-actions" style="display: flex; gap: 0.5rem; width: 100%;">
+                    <div class="prop-price-actions" style="display: flex; gap: 0.5rem; width: 100%; flex-wrap: wrap;">
                         <a id="btn-whatsapp-agent" href="#" target="_blank" class="btn-action" style="background-color: #25d366; border-color: #25d366; flex: 1; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;">
                             <i class="fab fa-whatsapp"></i> WhatsApp
                         </a>
                         <a id="btn-call-agent" href="#" class="btn-action" style="background-color: #007bff; border-color: #007bff; flex: 1; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;">
                             <i class="fas fa-phone"></i> Call Agent
                         </a>
+                        <button id="btn-apply-tenant" class="btn-action" style="background-color: var(--emerald); border-color: var(--emerald); color: black; font-weight: 700; flex: 1.2; display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; cursor: pointer;">
+                            <i class="fas fa-file-contract"></i> Apply to Rent
+                        </button>
                     </div>
                 </div>
             </div>
@@ -233,5 +240,117 @@
         </div>
     </footer>
 
+    <!-- Tenant Application Modal -->
+    <div id="tenant-modal" class="modal-overlay d-none" style="position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 1rem; animation: fadeIn 0.3s ease;">
+        <div class="modal-content glass-card" style="position: relative; max-width: 500px; width: 100%; background: rgba(10, 15, 10, 0.95); border: 1.5px solid rgba(0, 255, 136, 0.25); border-radius: 16px; padding: 2rem; box-shadow: 0 15px 40px rgba(0, 255, 136, 0.15); box-sizing: border-box;">
+            <button id="btn-close-tenant-modal" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: rgba(255,255,255,0.6); font-size: 1.5rem; cursor: pointer; transition: color 0.2s;"><i class="fas fa-times"></i></button>
+            
+            <div id="tenant-form-container">
+                <h2 style="font-family: var(--font-heading); color: white; margin-bottom: 0.5rem; font-size: 1.4rem;" id="tenant-modal-title">Tenant Application Form</h2>
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 1.5rem;" id="tenant-modal-subtitle">Secure verification via government database integration.</p>
+
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; position: relative;">
+                    <div style="display: flex; gap: 1rem; width: 100%; justify-content: space-around;">
+                        <span class="step-badge active" id="step-badge-1" style="width: 30px; height: 30px; border-radius: 50%; background: var(--emerald); color: black; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; border: 2px solid var(--emerald);">1</span>
+                        <span class="step-badge" id="step-badge-2" style="width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; border: 2px solid rgba(255,255,255,0.1);">2</span>
+                        <span class="step-badge" id="step-badge-3" style="width: 30px; height: 30px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; border: 2px solid rgba(255,255,255,0.1);">3</span>
+                    </div>
+                </div>
+
+                <form id="tenant-application-form">
+                    <!-- Step 1 -->
+                    <div id="form-step-1" class="form-step-panel">
+                        <h3 style="font-size: 0.95rem; color: var(--emerald); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">1. Personal Information</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 0.05em;">FULL NAME</label>
+                                <input type="text" id="app-full-name" required placeholder="John Doe" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 0.85rem; box-sizing: border-box;">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 0.05em;">EMAIL ADDRESS</label>
+                                <input type="email" id="app-email" required placeholder="john@example.com" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 0.85rem; box-sizing: border-box;">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 0.05em;">PHONE NUMBER</label>
+                                <input type="tel" id="app-phone" required placeholder="+234 810 000 0000" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 0.85rem; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <button type="button" id="btn-step-1-next" class="btn-action mt-4" style="background-color: var(--emerald); border-color: var(--emerald); color: black; font-weight: 700; width: 100%; padding: 0.85rem; border-radius: 8px; cursor: pointer; text-align: center; border: none; font-size: 0.9rem; margin-top: 1.5rem;">Continue</button>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div id="form-step-2" class="form-step-panel d-none">
+                        <h3 style="font-size: 0.95rem; color: var(--emerald); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">2. Income & Employment</h3>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 0.05em;">JOB TITLE</label>
+                                <input type="text" id="app-job" required placeholder="Senior Engineer" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 0.85rem; box-sizing: border-box;">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 0.05em;">EMPLOYER NAME</label>
+                                <input type="text" id="app-employer" required placeholder="Google LLC" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 0.85rem; box-sizing: border-box;">
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                                <label style="font-size: 0.7rem; color: #aaa; font-weight: 600; letter-spacing: 0.05em;">MONTHLY SALARY (₦)</label>
+                                <input type="number" id="app-salary" required placeholder="1500000" style="width: 100%; padding: 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; outline: none; font-size: 0.85rem; box-sizing: border-box;">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                            <button type="button" id="btn-step-2-back" class="btn-action" style="background-color: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: white; width: 35%; padding: 0.85rem; border-radius: 8px; cursor: pointer;">Back</button>
+                            <button type="button" id="btn-step-2-next" class="btn-action" style="background-color: var(--emerald); border-color: var(--emerald); color: black; font-weight: 700; width: 65%; padding: 0.85rem; border-radius: 8px; cursor: pointer; border: none; font-size: 0.9rem;">Continue</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div id="form-step-3" class="form-step-panel d-none">
+                        <h3 style="font-size: 0.95rem; color: var(--emerald); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em;">3. Identity Verification</h3>
+                        <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 1rem; line-height: 1.4;">To secure this listing, please verify your identity using standard government database verification (NIN).</p>
+                        
+                        <!-- Ninja Widget target -->
+                        <div id="ninja-form-anchor" style="min-height: 150px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1); padding: 1rem;"></div>
+                        
+                        <div id="app-verification-status" style="margin-top: 1rem; text-align: center;">
+                            <span class="status-badge" style="background: rgba(255, 193, 7, 0.15); color: #ffc107; font-size: 0.75rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 99px; display: inline-flex; align-items: center; gap: 0.25rem;"><i class="fas fa-hourglass-half"></i> Verification Pending</span>
+                        </div>
+
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                            <button type="button" id="btn-step-3-back" class="btn-action" style="background-color: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: white; width: 35%; padding: 0.85rem; border-radius: 8px; cursor: pointer;">Back</button>
+                            <button type="submit" id="btn-submit-application" disabled class="btn-action" style="background-color: var(--emerald); border-color: var(--emerald); color: black; font-weight: 700; width: 65%; padding: 0.85rem; border-radius: 8px; cursor: not-allowed; border: none; font-size: 0.9rem; opacity: 0.5;">Submit Application</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Success Panel -->
+            <div id="tenant-success-container" class="d-none" style="text-align: center; padding: 1rem 0;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(0, 255, 136, 0.1); color: var(--emerald); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 1.5rem auto;">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2 style="font-family: var(--font-heading); color: white; margin-bottom: 0.5rem; font-size: 1.4rem;">Application Submitted</h2>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.5; margin-bottom: 1.5rem;">Your identity has been verified via Ninja government database verification. Your application has been logged successfully and routed directly to the property curator.</p>
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 0.75rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; color: var(--emerald); margin-bottom: 1.5rem;" id="app-reference-id">
+                    REF: APP-839210
+                </div>
+                <button id="btn-success-close" class="btn-action" style="background-color: var(--emerald); border-color: var(--emerald); color: black; font-weight: 700; width: 100%; padding: 0.85rem; border-radius: 8px; cursor: pointer; border: none;">Done</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Fullscreen Gallery Lightbox -->
+    <div id="gallery-lightbox" class="lightbox-overlay d-none" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); z-index: 999999; display: flex; flex-direction: column; align-items: center; justify-content: center; animation: fadeIn 0.3s ease;">
+        <button id="btn-close-lightbox" style="position: absolute; top: 1.5rem; right: 1.5rem; background: none; border: none; color: white; font-size: 2.2rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; z-index: 10;"><i class="fas fa-times"></i></button>
+        
+        <div style="position: relative; width: 90%; max-width: 1000px; display: flex; align-items: center; justify-content: center; height: 70vh;">
+            <button id="btn-lightbox-prev" style="position: absolute; left: -1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; z-index: 10;"><i class="fas fa-chevron-left"></i></button>
+            <img id="lightbox-main-img" src="" alt="Lightbox Property View" style="max-height: 100%; max-width: 100%; object-fit: contain; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.15);">
+            <button id="btn-lightbox-next" style="position: absolute; right: -1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.2s; z-index: 10;"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        
+        <div id="lightbox-thumbs-container" style="width: 100%; max-width: 800px; display: flex; gap: 0.5rem; justify-content: center; margin-top: 2rem; overflow-x: auto; padding: 0.5rem 1rem; box-sizing: border-box;"></div>
+    </div>
+
+    <!-- Ninja SDK Script -->
+    <script src="assets/js/ninja.js"></script>
     <script type="module" src="property.js"></script>
 </div>

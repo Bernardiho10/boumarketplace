@@ -1583,13 +1583,15 @@ h3 {
 /* ========================
    RECENT SEARCH CHIPS
 ======================== */
-.recent-searches-container, .listing-recent-searches-container {
+.recent-searches-container,
+.listing-recent-searches-container {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
     animation: fadeIn 0.4s ease;
 }
+
 .recent-search-chip {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1603,21 +1605,25 @@ h3 {
     gap: 0.4rem;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .recent-search-chip:hover {
     background: rgba(0, 255, 136, 0.06);
     border-color: rgba(0, 255, 136, 0.25);
     color: var(--emerald);
     transform: translateY(-1px);
 }
+
 .recent-search-chip .recent-chip-remove {
     opacity: 0.4;
     transition: opacity 0.2s ease;
     margin-left: 0.2rem;
 }
+
 .recent-search-chip .recent-chip-remove:hover {
     opacity: 1;
     color: #ff4a4a;
 }
+
 .recent-search-clear-all {
     font-size: 0.65rem;
     color: rgba(255, 255, 255, 0.3);
@@ -1626,6 +1632,7 @@ h3 {
     transition: color 0.2s ease;
     margin-left: 0.5rem;
 }
+
 .recent-search-clear-all:hover {
     color: #ff4a4a;
 }
@@ -1646,9 +1653,11 @@ h3 {
         flex-direction: row;
         align-items: flex-start;
     }
+
     .listing-list-side {
         flex: 1.2;
     }
+
     .listing-map-side {
         flex: 0.8;
         position: sticky;
@@ -1665,6 +1674,7 @@ h3 {
     background: transparent;
     border: none;
 }
+
 .map-price-badge {
     background: rgba(10, 15, 10, 0.85);
     backdrop-filter: blur(8px);
@@ -1682,12 +1692,14 @@ h3 {
     white-space: nowrap;
     transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
 }
+
 .map-price-badge:hover {
     transform: scale(1.08);
     background: rgba(0, 255, 136, 0.18);
     color: var(--emerald);
     box-shadow: 0 6px 20px rgba(0, 255, 136, 0.3);
 }
+
 .map-marketplace-icon {
     color: var(--emerald);
     font-size: 10px;
@@ -1697,36 +1709,42 @@ h3 {
 .leaflet-container {
     background: #080c07 !important;
 }
+
 .leaflet-bar {
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     background-color: rgba(10, 15, 10, 0.85) !important;
     backdrop-filter: blur(8px);
     box-shadow: none !important;
 }
+
 .leaflet-bar a {
     background-color: transparent !important;
     color: rgba(255, 255, 255, 0.7) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
     transition: all 0.2s ease;
 }
+
 .leaflet-bar a:hover {
     color: var(--emerald) !important;
     background-color: rgba(255, 255, 255, 0.05) !important;
 }
+
 .leaflet-popup-content-wrapper {
     background: rgba(8, 12, 7, 0.95) !important;
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     color: #fff !important;
     border-radius: 12px !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
     font-family: var(--font-body);
 }
+
 .leaflet-popup-tip {
     background: rgba(8, 12, 7, 0.95) !important;
     border-left: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
+
 .map-popup-card {
     display: flex;
     flex-direction: column;
@@ -1734,12 +1752,14 @@ h3 {
     width: 180px;
     padding: 0.25rem;
 }
+
 .map-popup-img {
     width: 100%;
     height: 100px;
     object-fit: cover;
     border-radius: 6px;
 }
+
 .map-popup-price {
     font-weight: 800;
     color: var(--emerald);
@@ -1747,6 +1767,7 @@ h3 {
     font-size: 0.95rem;
     margin-top: 0.2rem;
 }
+
 .map-popup-title {
     font-size: 0.8rem;
     font-weight: 700;
@@ -1756,6 +1777,7 @@ h3 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .map-popup-link {
     font-size: 0.7rem;
     color: var(--emerald);
@@ -1765,6 +1787,68 @@ h3 {
     display: inline-block;
 }
 
+/* Gallery Nav Buttons Overlay */
+.gallery-nav-btn {
+    opacity: 0;
+    transition: opacity 0.3s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.prop-media-panel:hover .gallery-nav-btn {
+    opacity: 0.8;
+}
+
+.gallery-nav-btn:hover {
+    opacity: 1 !important;
+    background-color: rgba(0, 255, 136, 0.25) !important;
+    border-color: var(--emerald) !important;
+}
+
+/* Lightbox Thumbnail Styling */
+.lightbox-thumb {
+    opacity: 0.6;
+    transition: opacity 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.lightbox-thumb:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.lightbox-thumb.active {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Modal and Lightbox Overlay Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+
+    to {
+        opacity: 1;
+        backdrop-filter: blur(10px);
+    }
+}
+
+.modal-overlay,
+.lightbox-overlay {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.step-badge {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-step-panel {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.bou-footer {
+    margin-top: 40px;
+}
+
 /* ========================
    END OF MARKETPLACE STYLES
-======================== */
+   ======================== */

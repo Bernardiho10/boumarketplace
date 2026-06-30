@@ -315,9 +315,9 @@ class ListingPage {
         recognition.continuous = false;
 
         recognition.onstart = () => voiceButton?.classList.add("recording");
-        recognition.onresult = event => {
+        recognition.onresult = (event: any) => {
             const transcript = Array.from(event.results)
-                .map(result => result[0]?.transcript || "")
+                .map((result: any) => result[0]?.transcript || "")
                 .join(" ")
                 .trim();
             if (transcript) {
@@ -476,8 +476,8 @@ class ListingPage {
 
 declare global {
     interface Window {
-        SpeechRecognition?: SpeechRecognitionConstructor;
-        webkitSpeechRecognition?: SpeechRecognitionConstructor;
+        SpeechRecognition?: any;
+        webkitSpeechRecognition?: any;
     }
 }
 
