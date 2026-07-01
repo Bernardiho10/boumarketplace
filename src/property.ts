@@ -113,7 +113,20 @@ class PropertyDetailView extends MagicView {
 
         // Badges and status
         this.setText("prop-category", prop.category);
-        this.setText("prop-source", prop.sourceSite || "Verified");
+        const sourceEl = document.getElementById("prop-source");
+        if (sourceEl) {
+            sourceEl.textContent = prop.sourceSite || "Verified";
+            if (prop.sourceSite === 'Xtate') {
+                sourceEl.style.background = "#9B5DE5";
+                sourceEl.style.color = "white";
+            } else if (prop.sourceSite === 'Jiji') {
+                sourceEl.style.background = "#007bff";
+                sourceEl.style.color = "white";
+            } else {
+                sourceEl.style.background = "#00e676";
+                sourceEl.style.color = "black";
+            }
+        }
         this.setText("prop-status", prop.status);
         this.setText("prop-ref-id", `REF: ${prop.refId || '—'}`);
 
@@ -168,6 +181,13 @@ class PropertyDetailView extends MagicView {
                     <div style="background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.2); border-left: 4px solid #00e676; padding: 0.85rem; color: #c8e6c9; border-radius: 4px;">
                         <i class="fas fa-shield-alt" style="color: #00e676; margin-right: 0.5rem; font-size: 1rem;"></i>
                         <strong>NPC Verified Listing:</strong> Please inspect the property physically in person. Ensure you verify the agent's mandate and conduct a search at the state land registry before making payments.
+                    </div>
+                `;
+            } else if (prop.sourceSite === 'Xtate') {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(111, 66, 193, 0.15); border: 1px solid rgba(111, 66, 193, 0.3); border-left: 4px solid #9B5DE5; padding: 0.85rem; color: #e2d9f3; border-radius: 4px;">
+                        <i class="fas fa-check-circle" style="color: #9B5DE5; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>Xtate Direct Listing:</strong> This property is listed directly from our management network. Full identity verification, instant viewing booking, and automated rental contract support are active.
                     </div>
                 `;
             } else {
@@ -237,14 +257,19 @@ class PropertyDetailView extends MagicView {
 
         // Contact CTA Links (WhatsApp & Call)
         const btnWhatsapp = document.getElementById("btn-whatsapp-agent") as HTMLAnchorElement;
+        const isXtate = prop.sourceSite === 'Xtate';
         if (btnWhatsapp) {
-            btnWhatsapp.href = prop.original_url || '#';
+            btnWhatsapp.href = isXtate ? (prop.agentWhatsApp || '#') : (prop.original_url || '#');
             btnWhatsapp.target = "_blank";
         }
         const btnCall = document.getElementById("btn-call-agent") as HTMLAnchorElement;
         if (btnCall) {
-            btnCall.href = prop.original_url || '#';
-            btnCall.target = "_blank";
+            btnCall.href = isXtate ? (prop.agentPhone || '#') : (prop.original_url || '#');
+            if (isXtate) {
+                btnCall.removeAttribute("target");
+            } else {
+                btnCall.target = "_blank";
+            }
         }
 
         // Audio button
@@ -480,7 +505,14 @@ class PropertyDetailView extends MagicView {
         // Open/Close triggers
         btnOpen.addEventListener("click", (e) => {
             e.preventDefault();
-            window.open(prop.original_url, '_blank');
+            if (prop.sourceSite === 'Xtate') {
+                modal.classList.remove("d-none");
+                formContainer?.classList.remove("d-none");
+                successContainer?.classList.add("d-none");
+                this.goToStep(1);
+            } else {
+                window.open(prop.original_url, '_blank');
+            }
         });
 
         btnClose?.addEventListener("click", () => modal.classList.add("d-none"));

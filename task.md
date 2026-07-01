@@ -4,7 +4,9 @@
 Marketplace is a premium property listing platform specializing in high-end Nigerian real estate. The platform aggregates listings from top sources, enhances them using AI, and presents them in a high-fidelity, user-friendly interface.
 
 ## Core Features
-- [x] **Property Aggregation**: Scrape and filter top property posts (Value > ₦10,000,000) from Nigeria Property Centre.
+- [x] **Property Aggregation**: 
+    - [x] Scrape and filter top property posts (Value > ₦10,000,000) from Nigeria Property Centre.
+    - [x] Scrape Jiji pages and details directly using stealth-configured headless Chromium to bypass Cloudflare checks and gather 30+ real listings from each site.
 - [x] **AI Enhancement**: 
     - [x] Clean up and optimize property descriptions using Marketplace Intelligence.
     - [x] Ensure high-quality visual presentation using high-resolution images (thumbs stripped).

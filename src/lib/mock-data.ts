@@ -24,7 +24,7 @@ export interface Property {
     agentWhatsApp?: string;
     agentPhone?: string;
     agentVerified?: boolean;
-    sourceSite?: 'Jiji' | 'NPC';
+    sourceSite?: 'Jiji' | 'NPC' | 'Xtate';
 }
 
 export const MOCK_PROPERTIES: Property[] = [

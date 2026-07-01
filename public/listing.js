@@ -1,4 +1,4 @@
-import { D as DataProvider, M as MOCK_PROPERTIES, g as getCoordinatesWithJitter } from './property-f7a6443c.js';
+import { D as DataProvider, M as MOCK_PROPERTIES, g as getCoordinatesWithJitter } from './property-da7ddadb.js';
 
 class PlaceholderRotator {
     constructor(element, suggestions) {
@@ -122,6 +122,7 @@ class ListingPage {
         this.getSelect("listing-type-filter")?.addEventListener("change", () => this.render());
         this.getSelect("listing-price-filter")?.addEventListener("change", () => this.render());
         this.getSelect("listing-status-filter")?.addEventListener("change", () => this.render());
+        this.getSelect("listing-source-filter")?.addEventListener("change", () => this.render());
         document.getElementById("listing-clear-btn")?.addEventListener("click", () => this.clearFilters());
         document.getElementById("listing-voice-btn")?.addEventListener("click", () => this.startVoiceSearch());
         document.querySelectorAll(".listing-quick-prompts button").forEach(button => {
@@ -166,6 +167,7 @@ class ListingPage {
         const type = this.getSelect("listing-type-filter")?.value || "";
         const status = this.getSelect("listing-status-filter")?.value || "";
         const priceRange = this.getSelect("listing-price-filter")?.value || "";
+        const sourceVal = this.getSelect("listing-source-filter")?.value || "";
         const [minPrice, maxPrice] = priceRange ? priceRange.split("-").map(Number) : [0, Number.POSITIVE_INFINITY];
         const tokens = query.split(/\s+/).filter(token => token.length >= 2 && !SEARCH_STOP_WORDS.has(token));
         if (query.length >= 2 && !isPropertySearchQuery(query)) {
@@ -182,6 +184,8 @@ class ListingPage {
                 return { property, score: 0 };
             if (numericPrice < minPrice || numericPrice > maxPrice)
                 return { property, score: 0 };
+            if (sourceVal && (property.sourceSite || "").toLowerCase() !== sourceVal)
+                return { property, score: 0 };
             const matchedTokens = tokens.filter(token => searchable.includes(token));
             const score = tokens.length === 0 ? 1 : matchedTokens.length;
             return { property, score };
@@ -192,6 +196,7 @@ class ListingPage {
     }
     renderCard(property) {
         const source = property.sourceSite || this.getSourceLabel(property.original_url);
+        const isXtate = property.sourceSite === 'Xtate';
         // Build specs text including toilets and parking spaces
         const specs = [];
         if (property.bedrooms > 0)
@@ -226,8 +231,8 @@ class ListingPage {
                     <p class="listing-card-desc">${property.description}</p>
                     <div class="listing-card-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
                         <a href="property.html?id=${property.id}" class="listing-view-btn" style="flex: 1; text-align: center;">View details</a>
-                        <a href="${property.agentWhatsApp || '#'}" target="_blank" class="listing-whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat</a>
-                        <a href="${property.agentPhone || '#'}" class="listing-call-btn"><i class="fas fa-phone"></i> Call</a>
+                        <a href="${isXtate ? (property.agentWhatsApp || '#') : (property.original_url || '#')}" target="_blank" class="listing-whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat</a>
+                        <a href="${isXtate ? (property.agentPhone || '#') : (property.original_url || '#')}" ${isXtate ? '' : 'target="_blank"'} class="listing-call-btn"><i class="fas fa-phone"></i> Call</a>
                     </div>
                 </div>
             </article>
@@ -319,7 +324,7 @@ class ListingPage {
         const input = this.getInput("listing-search-input");
         if (input)
             input.value = "";
-        ["listing-location-filter", "listing-type-filter", "listing-price-filter", "listing-status-filter"].forEach(id => {
+        ["listing-location-filter", "listing-type-filter", "listing-price-filter", "listing-status-filter", "listing-source-filter"].forEach(id => {
             const select = this.getSelect(id);
             if (select)
                 select.value = "";
@@ -342,6 +347,8 @@ class ListingPage {
             return "NPC";
         if (url.includes("propertypro"))
             return "PropertyPro";
+        if (url.includes("xtate"))
+            return "Xtate";
         return "Verified source";
     }
     updateMapMarkers(filtered) {
@@ -355,9 +362,19 @@ class ListingPage {
             const coords = getCoordinatesWithJitter(property.location, property.id);
             bounds.push(coords);
             const priceAbbr = property.price.split(' ')[0];
+            let markerStyle = '';
+            let iconStyle = '';
+            if (property.sourceSite === 'Xtate') {
+                markerStyle = 'style="border-color: #9B5DE5; box-shadow: 0 4px 15px rgba(155, 93, 229, 0.35);"';
+                iconStyle = 'style="color: #9B5DE5;"';
+            }
+            else if (property.sourceSite === 'Jiji') {
+                markerStyle = 'style="border-color: #007bff; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);"';
+                iconStyle = 'style="color: #007bff;"';
+            }
             const customIcon = L.divIcon({
                 className: 'custom-price-marker',
-                html: `<div class="map-price-badge"><i class="fas fa-store map-marketplace-icon"></i> ₦${priceAbbr}</div>`,
+                html: `<div class="map-price-badge" ${markerStyle}><i class="fas fa-store map-marketplace-icon" ${iconStyle}></i> ₦${priceAbbr}</div>`,
                 iconSize: [80, 30],
                 iconAnchor: [40, 15]
             });

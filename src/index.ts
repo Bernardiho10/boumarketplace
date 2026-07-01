@@ -697,15 +697,20 @@ class NeuralMarketView extends MagicView {
 
         // WhatsApp and Call Actions
         const whatsappBtn = document.getElementById("stage-whatsapp-btn") as HTMLAnchorElement;
+        const isXtate = prop.sourceSite === 'Xtate';
         if (whatsappBtn) {
-            whatsappBtn.href = prop.original_url || '#';
+            whatsappBtn.href = isXtate ? (prop.agentWhatsApp || '#') : (prop.original_url || '#');
             whatsappBtn.target = "_blank";
         }
         
         const callBtn = document.getElementById("stage-call-btn") as HTMLAnchorElement;
         if (callBtn) {
-            callBtn.href = prop.original_url || '#';
-            callBtn.target = "_blank";
+            callBtn.href = isXtate ? (prop.agentPhone || '#') : (prop.original_url || '#');
+            if (isXtate) {
+                callBtn.removeAttribute("target");
+            } else {
+                callBtn.target = "_blank";
+            }
         }
 
         // Safety Alert Banner
@@ -723,6 +728,13 @@ class NeuralMarketView extends MagicView {
                     <div style="background: rgba(0, 230, 118, 0.1); border: 1px solid rgba(0, 230, 118, 0.2); border-left: 4px solid #00e676; padding: 0.85rem; color: #c8e6c9; border-radius: 4px;">
                         <i class="fas fa-shield-alt" style="color: #00e676; margin-right: 0.5rem; font-size: 1rem;"></i>
                         <strong>NPC Verified Listing:</strong> Always inspect this property in daylight. Verify the agent's registration status and run a search at the state land registry before making payments.
+                    </div>
+                `;
+            } else if (prop.sourceSite === 'Xtate') {
+                safetyBanner.innerHTML = `
+                    <div style="background: rgba(111, 66, 193, 0.15); border: 1px solid rgba(111, 66, 193, 0.3); border-left: 4px solid #9B5DE5; padding: 0.85rem; color: #e2d9f3; border-radius: 4px;">
+                        <i class="fas fa-check-circle" style="color: #9B5DE5; margin-right: 0.5rem; font-size: 1rem;"></i>
+                        <strong>Xtate Direct Listing:</strong> This property is listed directly from our management network. Full identity verification, instant viewing booking, and automated rental contract support are active.
                     </div>
                 `;
             } else {
@@ -774,9 +786,19 @@ class NeuralMarketView extends MagicView {
                 }).addTo(this.stageMap);
 
                 const priceAbbr = prop.price.split(' ')[0];
+                let markerStyle = '';
+                let iconStyle = '';
+                if (prop.sourceSite === 'Xtate') {
+                    markerStyle = 'style="border-color: #9B5DE5; box-shadow: 0 4px 15px rgba(155, 93, 229, 0.35);"';
+                    iconStyle = 'style="color: #9B5DE5;"';
+                } else if (prop.sourceSite === 'Jiji') {
+                    markerStyle = 'style="border-color: #007bff; box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);"';
+                    iconStyle = 'style="color: #007bff;"';
+                }
+
                 const customIcon = L.divIcon({
                     className: 'custom-price-marker',
-                    html: `<div class="map-price-badge"><i class="fas fa-store map-marketplace-icon"></i> ₦${priceAbbr}</div>`,
+                    html: `<div class="map-price-badge" ${markerStyle}><i class="fas fa-store map-marketplace-icon" ${iconStyle}></i> ₦${priceAbbr}</div>`,
                     iconSize: [80, 30],
                     iconAnchor: [40, 15]
                 });
